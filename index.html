@@ -3,77 +3,106 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Churn Reminder - HOME 2026</title>
+<title>Churn Calculator PRO</title>
 <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&display=swap" rel="stylesheet">
+
 <style>
+:root{
+    --tigo-blue:#0033A0;
+    --tigo-light:#0057D9;
+    --gradient:linear-gradient(135deg,#0033A0,#0057D9);
+}
+
 body{
-    font-family:'Poppins', sans-serif;
-    background: linear-gradient(135deg,#0f2027,#203a43,#2c5364);
-    color:white;
     margin:0;
+    font-family:'Poppins', sans-serif;
+    background:var(--gradient);
+    color:white;
+}
+
+.container{
+    max-width:500px;
+    margin:auto;
     padding:20px;
 }
-.container{
-    max-width:1200px;
-    margin:auto;
+
+.header{
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
 }
+
+h1{
+    font-size:20px;
+}
+
 .card{
     background:rgba(255,255,255,0.1);
     backdrop-filter:blur(10px);
     padding:20px;
-    border-radius:15px;
-    margin-bottom:20px;
+    border-radius:18px;
+    margin-top:20px;
 }
-h1{
-    text-align:center;
-    font-weight:700;
-}
-select,input,button{
-    padding:10px;
+
+input,select{
+    width:100%;
+    padding:12px;
+    border-radius:10px;
     border:none;
-    border-radius:8px;
-    margin-top:10px;
+    margin-bottom:10px;
+    font-size:14px;
 }
+
 button{
-    background:#00c6ff;
-    color:white;
+    width:100%;
+    padding:12px;
+    border-radius:12px;
+    border:none;
+    background:white;
+    color:var(--tigo-blue);
     font-weight:600;
+    font-size:15px;
     cursor:pointer;
 }
+
+.result{
+    margin-top:15px;
+}
+
 .alert{
-    padding:15px;
-    border-radius:10px;
-    margin-top:15px;
-}
-.success{background:#00b894;}
-.warning{background:#fdcb6e;color:black;}
-.danger{background:#d63031;}
-table{
-    width:100%;
-    margin-top:15px;
-    border-collapse:collapse;
-}
-th,td{
-    padding:10px;
+    padding:12px;
+    border-radius:12px;
+    margin-bottom:10px;
     text-align:center;
+    font-weight:600;
 }
-th{
-    background:#0984e3;
+
+.low{background:#06D6A0;color:black;}
+.medium{background:#FFD166;color:black;}
+.high{background:#EF476F;}
+
+.summary{
+    font-size:13px;
+    opacity:0.9;
+    margin-top:10px;
 }
-.risk-high{color:#ff7675;font-weight:700;}
-.risk-medium{color:#fdcb6e;font-weight:600;}
-.risk-low{color:#55efc4;font-weight:600;}
 </style>
 </head>
+
 <body>
 
 <div class="container">
-<h1>📉 Churn Reminder - HOME 2026</h1>
+
+<h1>📊 Churn Calculator PRO</h1>
 
 <div class="card">
-<h2>Simulador de Facturación</h2>
 
-<label>Ciclo:</label>
+<input type="text" id="cuenta" placeholder="Número de Cuenta">
+
+<label>Fecha Activación</label>
+<input type="date" id="fechaActivacion">
+
+<label>Ciclo</label>
 <select id="ciclo">
 <option value="1">Ciclo 1</option>
 <option value="7">Ciclo 7</option>
@@ -81,85 +110,81 @@ th{
 <option value="21">Ciclo 21</option>
 </select>
 
-<br>
+<input type="number" id="valorPlan" placeholder="Valor Plan (Gs)" value="180000">
+<input type="number" id="anticipo" placeholder="Anticipo (Gs)" value="111000">
+<input type="number" id="pagosRealizados" placeholder="Pagos Realizados (Gs)" value="0">
 
-<label>Valor Plan (Gs):</label>
-<input type="number" id="valorPlan" value="180000">
+<button onclick="calcular()">Calcular Estado</button>
 
-<br>
+<div class="result" id="resultado"></div>
 
-<label>Anticipo (Gs):</label>
-<input type="number" id="anticipo" value="111000">
-
-<br>
-
-<button onclick="calcular()">Calcular Riesgo</button>
-
-<div id="resultado"></div>
-
-</div>
-
-<div class="card">
-<h2>📋 Cuentas en Riesgo</h2>
-
-<table>
-<thead>
-<tr>
-<th>Cuenta</th>
-<th>Ciclo</th>
-<th>Días Mora</th>
-<th>Riesgo</th>
-</tr>
-</thead>
-<tbody id="tablaRiesgo">
-<tr>
-<td>40021987</td>
-<td>15</td>
-<td>5</td>
-<td class="risk-medium">MEDIO</td>
-</tr>
-<tr>
-<td>40022991</td>
-<td>7</td>
-<td>12</td>
-<td class="risk-high">ALTO</td>
-</tr>
-<tr>
-<td>40011982</td>
-<td>1</td>
-<td>0</td>
-<td class="risk-low">BAJO</td>
-</tr>
-</tbody>
-</table>
 </div>
 
 </div>
 
 <script>
+
 function calcular(){
 
+let cuenta = document.getElementById("cuenta").value;
+let fechaActivacion = new Date(document.getElementById("fechaActivacion").value);
+let ciclo = parseInt(document.getElementById("ciclo").value);
 let valorPlan = parseFloat(document.getElementById("valorPlan").value);
 let anticipo = parseFloat(document.getElementById("anticipo").value);
+let pagos = parseFloat(document.getElementById("pagosRealizados").value);
 
-let saldo = valorPlan - anticipo;
-let segundaFactura = valorPlan + saldo + 12000;
+let hoy = new Date();
 
-let resultadoDiv = document.getElementById("resultado");
+// Calcular próximo ciclo
+let fechaCiclo = new Date(fechaActivacion);
+fechaCiclo.setDate(ciclo);
 
-let html = `
-<div class="alert warning">
-Saldo Primera Factura: Gs ${saldo.toLocaleString()}
+if(fechaCiclo < fechaActivacion){
+    fechaCiclo.setMonth(fechaCiclo.getMonth()+1);
+}
+
+// Dias mora
+let diasMora = Math.floor((hoy - fechaCiclo) / (1000*60*60*24));
+if(diasMora < 0) diasMora = 0;
+
+// Saldo
+let saldoPrimera = valorPlan - anticipo - pagos;
+if(saldoPrimera < 0) saldoPrimera = 0;
+
+let segundaFactura = valorPlan + saldoPrimera + 12000;
+
+// Riesgo
+let riesgoClase="";
+let riesgoTexto="";
+
+if(diasMora <= 3){
+    riesgoClase="low";
+    riesgoTexto="RIESGO BAJO";
+}else if(diasMora <=10){
+    riesgoClase="medium";
+    riesgoTexto="RIESGO MEDIO";
+}else{
+    riesgoClase="high";
+    riesgoTexto="RIESGO ALTO - Posible Churn";
+}
+
+document.getElementById("resultado").innerHTML=`
+
+<div class="alert ${riesgoClase}">
+${riesgoTexto}
 </div>
 
-<div class="alert danger">
-Si no paga → Segunda Factura: Gs ${segundaFactura.toLocaleString()}
-(Incluye cargo administrativo 12.000)
+<div class="summary">
+Cuenta: <b>${cuenta}</b><br>
+Días Mora: <b>${diasMora}</b><br>
+Saldo Primera Factura: <b>Gs ${saldoPrimera.toLocaleString()}</b><br>
+Si no paga → Segunda Factura: <b>Gs ${segundaFactura.toLocaleString()}</b>
 </div>
+
 `;
 
-resultadoDiv.innerHTML = html;
 }
+
 </script>
 
 </body>
