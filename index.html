@@ -1,215 +1,62 @@
 <!DOCTYPE html>
 <html lang="es">
-
 <head>
 
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<title>Churn Tool HOME</title>
-
-<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
+<title>Simulador Churn</title>
 
 <style>
 
-:root{
---tigo:#0033A0;
---tigo2:#0057D9;
-}
-
-/* normalización para celular */
-
-*{
-box-sizing:border-box;
-margin:0;
-padding:0;
-}
-
 body{
-font-family:'Poppins',sans-serif;
-background:linear-gradient(135deg,#0033A0,#0057D9);
+font-family:Arial;
+background:#0033A0;
 color:white;
 padding:20px;
 }
 
-.container{
-max-width:420px;
-margin:auto;
-}
+.timeline{
 
-.header{
-display:flex;
-justify-content:space-between;
-align-items:center;
-margin-bottom:20px;
-}
-
-.title{
-font-size:20px;
-font-weight:600;
-}
-
-.help{
-width:36px;
-height:36px;
-background:white;
-color:#0033A0;
-border-radius:50%;
-display:flex;
-align-items:center;
-justify-content:center;
-font-weight:bold;
-cursor:pointer;
-}
-
-.card{
-background:rgba(255,255,255,0.12);
-padding:18px;
-border-radius:16px;
-margin-bottom:15px;
-}
-
-.section-title{
-font-size:14px;
-font-weight:600;
-margin-bottom:12px;
-opacity:0.9;
-}
-
-.input-group{
-margin-bottom:14px;
-}
-
-label{
-font-size:12px;
-opacity:0.85;
-display:block;
-margin-bottom:5px;
-}
-
-/* INPUTS NORMALIZADOS */
-
-input,
-select{
-
-width:100%;
-height:48px;
-
-padding:12px;
-
-border-radius:12px;
-border:none;
-
-font-size:14px;
-font-family:'Poppins',sans-serif;
-
-background:#f2f2f2;
-
-appearance:none;
--webkit-appearance:none;
--moz-appearance:none;
+position:relative;
+height:100px;
+margin-top:40px;
 
 }
 
-/* flecha select */
+.line{
 
-select{
-background:#f2f2f2
-url("data:image/svg+xml;utf8,<svg fill='gray' height='20' viewBox='0 0 24 24' width='20' xmlns='http://www.w3.org/2000/svg'><path d='M7 10l5 5 5-5z'/></svg>")
-no-repeat right 12px center;
-background-size:18px;
-}
-
-.botones{
-display:flex;
-gap:10px;
-margin-top:10px;
-}
-
-.botones button{
-flex:1;
-}
-
-button{
-padding:14px;
-border:none;
-border-radius:12px;
-background:white;
-color:#0033A0;
-font-weight:600;
-font-size:15px;
-cursor:pointer;
-}
-
-.btn-clear{
-background:#d9d9d9;
-color:#333;
-}
-
-.result{
-margin-top:15px;
-}
-
-.alert{
-padding:12px;
-border-radius:10px;
-margin-bottom:8px;
-font-weight:600;
-text-align:center;
-}
-
-.medium{
-background:#FFD166;
-color:black;
-}
-
-.high{
-background:#EF476F;
-}
-
-.modal{
-
-position:fixed;
-top:0;
+position:absolute;
+top:50%;
 left:0;
 width:100%;
-height:100%;
-
-background:rgba(0,0,0,0.85);
-
-display:none;
-justify-content:center;
-align-items:center;
-
-padding:20px;
-
-}
-
-.modal-content{
-
+height:4px;
 background:white;
-padding:15px;
-border-radius:12px;
-
-max-width:500px;
-max-height:90%;
-
-overflow:auto;
 
 }
 
-.modal-content img{
-width:100%;
-margin-bottom:12px;
-border-radius:8px;
-}
+.event{
 
-.close{
-text-align:right;
-font-weight:bold;
+position:absolute;
+top:50%;
+transform:translate(-50%,-50%);
+width:28px;
+height:28px;
+
+background:#FFD166;
+border-radius:50%;
+
 cursor:pointer;
-color:black;
-margin-bottom:10px;
+
+}
+
+.label{
+
+position:absolute;
+top:65%;
+transform:translateX(-50%);
+font-size:12px;
+
 }
 
 </style>
@@ -218,168 +65,58 @@ margin-bottom:10px;
 
 <body>
 
-<div class="container">
+<h2>Simulador Ciclo Facturación</h2>
 
-<div class="header">
+<p>Arrastra las esferas para simular fechas</p>
 
-<div class="title">📊 Churn Tool</div>
+<div class="timeline">
 
-<div class="help" onclick="abrirAyuda()">?</div>
+<div class="line"></div>
 
-</div>
+<div class="event" id="instalacion" style="left:10%"></div>
+<div class="label" style="left:10%">Instalación</div>
 
-<!-- DATOS CUENTA -->
+<div class="event" id="factura" style="left:40%"></div>
+<div class="label" style="left:40%">Factura</div>
 
-<div class="card">
+<div class="event" id="vencimiento" style="left:70%"></div>
+<div class="label" style="left:70%">Pago</div>
 
-<div class="section-title">DATOS DE LA CUENTA</div>
-
-<div class="input-group">
-<label>Número de Cuenta</label>
-<input type="text" id="cuenta" placeholder="Ej: 40021987">
-</div>
-
-<div class="input-group">
-<label>Fecha de Instalación</label>
-<input type="date" id="fechaActivacion">
-</div>
-
-<div class="input-group">
-<label>Ciclo de Facturación</label>
-
-<select id="ciclo">
-
-<option value="1">Ciclo 1</option>
-<option value="7">Ciclo 7</option>
-<option value="15">Ciclo 15</option>
-<option value="21">Ciclo 21</option>
-
-</select>
+<div class="event" id="cargo" style="left:90%"></div>
+<div class="label" style="left:90%">Cargo</div>
 
 </div>
-
-</div>
-
-<!-- PLAN -->
-
-<div class="card">
-
-<div class="section-title">DATOS DEL PLAN</div>
-
-<div class="input-group">
-<label>Valor del Plan (Gs)</label>
-<input type="number" id="valorPlan" placeholder="Ej: 180000">
-</div>
-
-<div class="input-group">
-<label>Pago Anticipo (Gs)</label>
-<input type="number" id="anticipo" placeholder="Ej: 111000">
-</div>
-
-</div>
-
-<!-- PAGOS -->
-
-<div class="card">
-
-<div class="section-title">PAGOS DEL CLIENTE</div>
-
-<div class="input-group">
-<label>Pagos Realizados (Gs)</label>
-<input type="number" id="pagos" placeholder="Ej: 50000">
-</div>
-
-<div class="botones">
-
-<button onclick="calcular()">CALCULAR</button>
-
-<button class="btn-clear" onclick="limpiar()">LIMPIAR</button>
-
-</div>
-
-<div id="resultado" class="result"></div>
-
-</div>
-
-</div>
-
-
-<!-- MODAL AYUDA -->
-
-<div class="modal" id="modalAyuda">
-
-<div class="modal-content">
-
-<div class="close" onclick="cerrarAyuda()">Cerrar ✖</div>
-
-<img src="Imagenes/Diapositiva2.PNG">
-<img src="Imagenes/Diapositiva3.PNG">
-<img src="Imagenes/Diapositiva4.PNG">
-<img src="Imagenes/Diapositiva5.PNG">
-<img src="Imagenes/Diapositiva6.PNG">
-<img src="Imagenes/Diapositiva7.PNG">
-
-</div>
-
-</div>
-
 
 <script>
 
-function calcular(){
+const events=document.querySelectorAll(".event");
 
-let valorPlan=parseFloat(document.getElementById("valorPlan").value)||0;
-let anticipo=parseFloat(document.getElementById("anticipo").value)||0;
-let pagos=parseFloat(document.getElementById("pagos").value)||0;
+events.forEach(event=>{
 
-let saldo=valorPlan-anticipo-pagos;
+event.addEventListener("touchmove",move);
+event.addEventListener("mousemove",move);
 
-if(saldo<0){
-saldo=0;
+});
+
+function move(e){
+
+let timeline=document.querySelector(".timeline");
+let rect=timeline.getBoundingClientRect();
+
+let x;
+
+if(e.touches){
+x=e.touches[0].clientX;
+}else{
+x=e.clientX;
 }
 
-let segunda=valorPlan+saldo+12000;
+let pos=(x-rect.left)/rect.width*100;
 
-document.getElementById("resultado").innerHTML=
+if(pos<0) pos=0;
+if(pos>100) pos=100;
 
-`
-<div class="alert medium">
-
-Saldo Primera Factura: Gs ${saldo.toLocaleString()}
-
-</div>
-
-<div class="alert high">
-
-Si no paga → Segunda Factura: Gs ${segunda.toLocaleString()}
-
-</div>
-
-`;
-
-}
-
-function limpiar(){
-
-document.getElementById("cuenta").value="";
-document.getElementById("fechaActivacion").value="";
-document.getElementById("ciclo").value="1";
-document.getElementById("valorPlan").value="";
-document.getElementById("anticipo").value="";
-document.getElementById("pagos").value="";
-document.getElementById("resultado").innerHTML="";
-
-}
-
-function abrirAyuda(){
-
-document.getElementById("modalAyuda").style.display="flex";
-
-}
-
-function cerrarAyuda(){
-
-document.getElementById("modalAyuda").style.display="none";
+this.style.left=pos+"%";
 
 }
 
