@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="es">
+
 <head>
 
 <meta charset="UTF-8">
@@ -55,12 +56,10 @@ cursor:pointer;
 }
 
 .card{
-
 background:rgba(255,255,255,0.12);
 padding:18px;
 border-radius:16px;
 margin-bottom:15px;
-
 }
 
 .section-title{
@@ -82,17 +81,14 @@ margin-bottom:4px;
 }
 
 input,select{
-
 width:100%;
 padding:12px;
 border-radius:10px;
 border:none;
 font-size:14px;
-
 }
 
 button{
-
 width:100%;
 padding:14px;
 border:none;
@@ -102,7 +98,6 @@ color:#0033A0;
 font-weight:600;
 font-size:15px;
 cursor:pointer;
-
 }
 
 .result{
@@ -128,42 +123,6 @@ margin-top:10px;
 line-height:1.5;
 }
 
-.modal{
-
-position:fixed;
-top:0;
-left:0;
-width:100%;
-height:100%;
-background:rgba(0,0,0,0.8);
-display:none;
-justify-content:center;
-align-items:center;
-
-}
-
-.modal-content{
-
-background:white;
-padding:10px;
-border-radius:12px;
-max-width:90%;
-max-height:90%;
-overflow:auto;
-
-}
-
-.modal img{
-width:100%;
-}
-
-.close{
-text-align:right;
-font-weight:bold;
-cursor:pointer;
-color:black;
-}
-
 .botones{
 display:flex;
 gap:10px;
@@ -179,6 +138,42 @@ background:#d9d9d9;
 color:#333;
 }
 
+.modal{
+position:fixed;
+top:0;
+left:0;
+width:100%;
+height:100%;
+background:rgba(0,0,0,0.85);
+display:none;
+justify-content:center;
+align-items:center;
+padding:20px;
+}
+
+.modal-content{
+background:white;
+padding:15px;
+border-radius:12px;
+max-width:500px;
+max-height:90%;
+overflow:auto;
+}
+
+.modal-content img{
+width:100%;
+margin-bottom:12px;
+border-radius:8px;
+}
+
+.close{
+text-align:right;
+font-weight:bold;
+cursor:pointer;
+color:black;
+margin-bottom:10px;
+}
+
 </style>
 
 </head>
@@ -191,6 +186,7 @@ color:#333;
 <div class="title">📊 Churn Tool</div>
 <div class="help" onclick="abrirAyuda()">?</div>
 </div>
+
 
 <!-- DATOS CUENTA -->
 
@@ -220,6 +216,7 @@ color:#333;
 
 </div>
 
+
 <!-- PLAN -->
 
 <div class="card">
@@ -237,6 +234,7 @@ color:#333;
 </div>
 
 </div>
+
 
 <!-- PAGOS -->
 
@@ -257,8 +255,14 @@ color:#333;
 
 </div>
 
+<div id="resultado" class="result"></div>
 
-<!-- AYUDA -->
+</div>
+
+</div>
+
+
+<!-- MODAL AYUDA -->
 
 <div class="modal" id="modalAyuda">
 
@@ -266,11 +270,16 @@ color:#333;
 
 <div class="close" onclick="cerrarAyuda()">Cerrar ✖</div>
 
-<img src="reglas.png">
+<img src="imagenes/slide1.png">
+<img src="imagenes/slide2.png">
+<img src="imagenes/slide3.png">
+<img src="imagenes/slide4.png">
 
 </div>
 
 </div>
+
+
 
 <script>
 
@@ -282,29 +291,26 @@ let pagos=parseFloat(document.getElementById("pagos").value)||0;
 
 let saldo=valorPlan-anticipo-pagos;
 
-if(saldo<0) saldo=0;
+if(saldo<0){
+saldo=0;
+}
 
 let segunda=valorPlan+saldo+12000;
 
 document.getElementById("resultado").innerHTML=
 
 `
-
 <div class="alert medium">
-
 Saldo Primera Factura: Gs ${saldo.toLocaleString()}
-
 </div>
 
 <div class="alert high">
-
 Si no paga → Segunda Factura: Gs ${segunda.toLocaleString()}
-
 </div>
-
 `;
 
 }
+
 
 function limpiar(){
 
@@ -314,10 +320,10 @@ document.getElementById("ciclo").value="1";
 document.getElementById("valorPlan").value="";
 document.getElementById("anticipo").value="";
 document.getElementById("pagos").value="";
-
 document.getElementById("resultado").innerHTML="";
 
 }
+
 
 function abrirAyuda(){
 
