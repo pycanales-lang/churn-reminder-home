@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="es">
+
 <head>
 
 <meta charset="UTF-8">
@@ -7,17 +8,30 @@
 
 <title>Simulador Facturación</title>
 
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
+
 <style>
 
+:root{
+--tigo:#0033A0;
+--tigo2:#0057D9;
+}
+
+*{
+box-sizing:border-box;
+margin:0;
+padding:0;
+}
+
 body{
-font-family:Arial;
-background:#0d3b9f;
+font-family:'Poppins',sans-serif;
+background:linear-gradient(135deg,#0033A0,#0057D9);
 color:white;
 padding:20px;
 }
 
 .container{
-max-width:500px;
+max-width:420px;
 margin:auto;
 }
 
@@ -25,14 +39,20 @@ margin:auto;
 display:flex;
 justify-content:space-between;
 align-items:center;
+margin-bottom:20px;
+}
+
+.title{
+font-size:20px;
+font-weight:600;
 }
 
 .help{
-width:32px;
-height:32px;
-border-radius:50%;
+width:36px;
+height:36px;
 background:white;
-color:#0d3b9f;
+color:#0033A0;
+border-radius:50%;
 display:flex;
 align-items:center;
 justify-content:center;
@@ -40,46 +60,75 @@ font-weight:bold;
 cursor:pointer;
 }
 
-.panel{
-background:#214ea8;
-padding:20px;
-border-radius:14px;
-margin-top:10px;
+.card{
+background:rgba(255,255,255,0.12);
+padding:18px;
+border-radius:16px;
+margin-bottom:15px;
+}
+
+label{
+font-size:12px;
+opacity:0.85;
+display:block;
+margin-bottom:5px;
 }
 
 input{
+
 width:100%;
+height:48px;
+
 padding:12px;
-margin-bottom:10px;
+
+border-radius:12px;
 border:none;
-border-radius:8px;
-font-size:15px;
+
+font-size:14px;
+
+background:#f2f2f2;
+
+}
+
+.botones{
+display:flex;
+gap:10px;
+margin-top:10px;
+}
+
+.botones button{
+flex:1;
 }
 
 button{
-width:100%;
-padding:12px;
+padding:14px;
 border:none;
-border-radius:8px;
-margin-top:6px;
-font-weight:bold;
+border-radius:12px;
+background:white;
+color:#0033A0;
+font-weight:600;
+font-size:15px;
 cursor:pointer;
 }
 
-.simular{
-background:white;
-color:#0d3b9f;
+.btn-clear{
+background:#d9d9d9;
+color:#333;
 }
 
-.limpiar{
-background:#dcdcdc;
-color:black;
+/* timeline */
+
+.meses{
+display:flex;
+justify-content:space-between;
+margin-top:10px;
+font-weight:600;
 }
 
 .timeline{
 position:relative;
-height:170px;
-margin-top:30px;
+height:160px;
+margin-top:20px;
 }
 
 .line{
@@ -99,7 +148,6 @@ display:flex;
 align-items:center;
 justify-content:center;
 font-weight:bold;
-cursor:pointer;
 }
 
 .top{
@@ -112,10 +160,10 @@ top:60%;
 transform:translate(-50%,-50%);
 }
 
-.install{background:#4cc9f0;}
-.invoice{background:#ffd166;color:black;}
-.pay{background:#06d6a0;}
-.charge{background:#ef476f;}
+.install{background:#4CC9F0;}
+.invoice{background:#FFD166;color:black;}
+.pay{background:#06D6A0;}
+.charge{background:#EF476F;}
 
 .label{
 position:absolute;
@@ -130,11 +178,11 @@ transform:translateX(-50%);
 
 .result{
 margin-top:20px;
-font-size:16px;
+font-size:15px;
 }
 
-.good{color:#06d6a0;}
-.bad{color:#ff4d4d;}
+.good{color:#06D6A0;}
+.bad{color:#EF476F;}
 
 .modal{
 position:fixed;
@@ -142,7 +190,7 @@ top:0;
 left:0;
 width:100%;
 height:100%;
-background:rgba(0,0,0,0.8);
+background:rgba(0,0,0,0.85);
 display:none;
 justify-content:center;
 align-items:center;
@@ -151,26 +199,29 @@ padding:20px;
 
 .modal-content{
 background:white;
-max-width:600px;
+padding:15px;
+border-radius:12px;
+max-width:500px;
 max-height:90%;
 overflow:auto;
-border-radius:10px;
-padding:10px;
 }
 
-.modal img{
+.modal-content img{
 width:100%;
-margin-bottom:10px;
+margin-bottom:12px;
+border-radius:8px;
 }
 
 .close{
-color:black;
+text-align:right;
 font-weight:bold;
 cursor:pointer;
-text-align:right;
+color:black;
+margin-bottom:10px;
 }
 
 </style>
+
 </head>
 
 <body>
@@ -178,11 +229,11 @@ text-align:right;
 <div class="container">
 
 <div class="header">
-<h2>Simulador Facturación</h2>
+<div class="title">Simulador Facturación</div>
 <div class="help" onclick="abrirAyuda()">?</div>
 </div>
 
-<div class="panel">
+<div class="card">
 
 <label>Fecha instalación</label>
 <input type="date" id="fecha">
@@ -193,12 +244,14 @@ text-align:right;
 <label>Anticipo</label>
 <input type="number" id="anticipo" value="111000">
 
-<button class="simular" onclick="simular()">Simular</button>
-<button class="limpiar" onclick="limpiar()">Limpiar</button>
+<div class="botones">
+<button onclick="simular()">Simular</button>
+<button class="btn-clear" onclick="limpiar()">Limpiar</button>
+</div>
 
 </div>
 
-<div id="meses" style="display:flex;justify-content:space-between;margin-top:10px"></div>
+<div id="meses" class="meses"></div>
 
 <div class="timeline">
 
@@ -222,10 +275,12 @@ text-align:right;
 
 </div>
 
-<!-- AYUDA -->
+<!-- ayuda -->
 
 <div class="modal" id="modalAyuda">
+
 <div class="modal-content">
+
 <div class="close" onclick="cerrarAyuda()">Cerrar ✖</div>
 
 <img src="Imagenes/Diapositiva2.PNG">
@@ -236,9 +291,14 @@ text-align:right;
 <img src="Imagenes/Diapositiva7.PNG">
 
 </div>
+
 </div>
 
 <script>
+
+let cicloActual=0;
+let diaInstalacion=0;
+let saldoActual=0;
 
 function simular(){
 
@@ -251,18 +311,13 @@ return;
 
 let fecha=new Date(fechaInput);
 
-let dia=fecha.getDate();
+diaInstalacion=fecha.getDate();
 
 let ciclos=[1,7,15,21];
 
-let ciclo=ciclos.find(c=>c>dia);
+cicloActual=ciclos.find(c=>c>diaInstalacion);
 
-let mesFactura=fecha.getMonth();
-
-if(!ciclo){
-ciclo=1;
-mesFactura=mesFactura+1;
-}
+if(!cicloActual) cicloActual=1;
 
 let mesActual=fecha.toLocaleString("es-ES",{month:"long"});
 let mesSig=new Date(fecha.getFullYear(),fecha.getMonth()+1)
@@ -271,11 +326,11 @@ let mesSig=new Date(fecha.getFullYear(),fecha.getMonth()+1)
 document.getElementById("meses").innerHTML=
 `<span>${mesActual}</span><span>${mesSig}</span>`;
 
-let posInst=(dia/31)*100;
-let posFact=(ciclo/31)*100;
+let posInst=(diaInstalacion/31)*100;
+let posFact=(cicloActual/31)*100;
 
-setEvent("inst","instLabel",posInst,dia);
-setEvent("fact","factLabel",posFact,ciclo);
+setEvent("inst","instLabel",posInst,diaInstalacion);
+setEvent("fact","factLabel",posFact,cicloActual);
 
 let posPay=posFact+10;
 let posCharge=posFact+20;
@@ -286,12 +341,9 @@ setEvent("charge","chargeLabel",posCharge,"C");
 let plan=parseFloat(document.getElementById("plan").value)||0;
 let anticipo=parseFloat(document.getElementById("anticipo").value)||0;
 
-let saldo=plan-anticipo;
+saldoActual=plan-anticipo;
 
-document.getElementById("info").innerHTML=
-`Ciclo asignado: ${ciclo}<br>
-Prorrateo exonerado: ${dia} → ${ciclo}<br><br>
-Saldo primera factura: ${saldo.toLocaleString()}`;
+actualizarEstado("Pago dentro del plazo","good");
 
 }
 
@@ -335,19 +387,36 @@ check(pos);
 
 function check(pos){
 
-let charge=document.getElementById("charge").style.left.replace("%","");
+let cargoPos=parseFloat(
+document.getElementById("charge").style.left
+);
 
-let info=document.getElementById("info");
+if(pos>cargoPos){
 
-if(pos>charge){
-
-info.innerHTML += "<br><span class='bad'>Genera cargo administrativo</span>";
+actualizarEstado("Genera cargo administrativo","bad");
 
 }else{
 
-info.innerHTML += "<br><span class='good'>Pago dentro del plazo</span>";
+actualizarEstado("Pago dentro del plazo","good");
 
 }
+
+}
+
+function actualizarEstado(texto,clase){
+
+document.getElementById("info").innerHTML=
+
+`
+Ciclo asignado: ${cicloActual}<br>
+Prorrateo exonerado: ${diaInstalacion} → ${cicloActual}<br><br>
+
+Saldo primera factura: ${saldoActual.toLocaleString()}<br>
+
+<span class="${clase}">
+${texto}
+</span>
+`;
 
 }
 
