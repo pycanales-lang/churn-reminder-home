@@ -2,10 +2,7 @@
 <html lang="es">
 <head>
 
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-
-<title>Simulador Ciclo</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
 
 <style>
 
@@ -16,47 +13,73 @@ color:white;
 padding:20px;
 }
 
-h2{
-text-align:center;
+.container{
+max-width:500px;
+margin:auto;
 }
 
-.panel{
-background:rgba(255,255,255,0.1);
-padding:20px;
-border-radius:12px;
+.title{
+text-align:center;
+font-size:22px;
+font-weight:bold;
 margin-bottom:20px;
 }
 
+.panel{
+
+background:rgba(255,255,255,0.1);
+padding:15px;
+border-radius:12px;
+margin-bottom:20px;
+
+}
+
 .timeline{
+
 position:relative;
-height:140px;
 margin-top:30px;
+height:120px;
+
 }
 
 .line{
+
 position:absolute;
 top:50%;
-left:0;
 width:100%;
 height:4px;
 background:white;
+
 }
 
-.day{
+.marker{
+
 position:absolute;
-top:60%;
-font-size:11px;
+top:55%;
 transform:translateX(-50%);
+font-size:12px;
+
 }
 
 .event{
+
 position:absolute;
 top:50%;
 transform:translate(-50%,-50%);
-width:32px;
-height:32px;
+
+width:38px;
+height:38px;
+
 border-radius:50%;
+
+display:flex;
+align-items:center;
+justify-content:center;
+
+font-weight:bold;
+
 cursor:pointer;
+
 }
 
 .install{background:#06D6A0;}
@@ -64,39 +87,23 @@ cursor:pointer;
 .pay{background:#4CC9F0;}
 .charge{background:#EF476F;}
 
-.label{
-position:absolute;
-top:25%;
-transform:translateX(-50%);
-font-size:12px;
+.legend{
+
+margin-top:20px;
+font-size:14px;
+
 }
 
 .status{
-text-align:center;
-margin-top:25px;
+
+margin-top:20px;
 font-size:18px;
-font-weight:bold;
+text-align:center;
+
 }
 
 .good{color:#06D6A0;}
 .bad{color:#EF476F;}
-
-button{
-
-width:100%;
-margin-top:25px;
-padding:14px;
-
-border:none;
-border-radius:10px;
-
-font-size:16px;
-font-weight:bold;
-
-background:white;
-color:#0033A0;
-
-}
 
 </style>
 
@@ -104,11 +111,17 @@ color:#0033A0;
 
 <body>
 
-<h2>Simulador de Ciclo</h2>
+<div class="container">
+
+<div class="title">
+
+Simulador de Facturación
+
+</div>
 
 <div class="panel">
 
-<p>Mueve el pago para simular cuándo paga el cliente</p>
+Arrastra el pago para simular cuándo paga el cliente.
 
 </div>
 
@@ -116,38 +129,31 @@ color:#0033A0;
 
 <div class="line"></div>
 
-<!-- días -->
+<div class="marker" style="left:5%">1</div>
+<div class="marker" style="left:20%">7</div>
+<div class="marker" style="left:40%">15</div>
+<div class="marker" style="left:60%">21</div>
+<div class="marker" style="left:85%">30</div>
 
-<div class="day" style="left:10%">1</div>
-<div class="day" style="left:25%">7</div>
-<div class="day" style="left:40%">15</div>
-<div class="day" style="left:55%">21</div>
-<div class="day" style="left:75%">25</div>
-<div class="day" style="left:90%">30</div>
+<div class="event install" style="left:20%">7</div>
+<div class="event invoice" style="left:40%">15</div>
+<div class="event pay" id="pago" style="left:55%">P</div>
+<div class="event charge" style="left:85%">C</div>
 
-<!-- eventos -->
+</div>
 
-<div class="event install" style="left:10%"></div>
-<div class="label" style="left:10%">Instalación</div>
+<div class="legend">
 
-<div class="event invoice" style="left:40%"></div>
-<div class="label" style="left:40%">Factura</div>
-
-<div class="event pay" id="pago" style="left:55%"></div>
-<div class="label" style="left:55%">Pago</div>
-
-<div class="event charge" style="left:85%"></div>
-<div class="label" style="left:85%">Cargo Adm</div>
+🟢 Instalación  
+🟡 Emisión Factura  
+🔵 Pago Cliente  
+🔴 Cargo Administrativo  
 
 </div>
 
 <div id="estado" class="status"></div>
 
-<button onclick="irCalculadora()">
-
-📊 Ir a Calculadora
-
-</button>
+</div>
 
 <script>
 
@@ -176,17 +182,17 @@ if(pos>100) pos=100;
 
 pago.style.left=pos+"%";
 
-checkStatus(pos);
+check(pos);
 
 }
 
-function checkStatus(pos){
+function check(pos){
 
 let estado=document.getElementById("estado");
 
-if(pos<75){
+if(pos<70){
 
-estado.innerHTML="Pago a tiempo ✔";
+estado.innerHTML="Pago dentro del plazo ✔";
 estado.className="status good";
 
 }else{
@@ -195,12 +201,6 @@ estado.innerHTML="Genera cargo administrativo ⚠";
 estado.className="status bad";
 
 }
-
-}
-
-function irCalculadora(){
-
-alert("Aquí conectaremos con la calculadora de deuda.");
 
 }
 
