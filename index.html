@@ -320,8 +320,6 @@ cicloActual=ciclos.find(c=>c>diaInstalacion);
 if(!cicloActual) cicloActual=1;
 
 let mesActual=fecha.toLocaleString("es-ES",{month:"long"});
-let mesSig=new Date(fecha.getFullYear(),fecha.getMonth()+1)
-.toLocaleString("es-ES",{month:"long"});
 
 document.getElementById("meses").innerHTML=
 `<span>${mesActual}</span><span>${mesSig}</span>`;
@@ -405,6 +403,12 @@ actualizarEstado("Pago dentro del plazo","good");
 
 function actualizarEstado(texto,clase){
 
+let total = saldoActual;
+
+if(texto === "Genera cargo administrativo"){
+total = saldoActual + 12000;
+}
+
 document.getElementById("info").innerHTML=
 
 `
@@ -412,6 +416,14 @@ Ciclo asignado: ${cicloActual}<br>
 Prorrateo exonerado: ${diaInstalacion} → ${cicloActual}<br><br>
 
 Saldo primera factura: ${saldoActual.toLocaleString()}<br>
+
+${texto === "Genera cargo administrativo" ? `
+Cargo administrativo: 12,000<br><br>
+
+<strong style="font-size:18px;color:#FFD166;">
+Total a pagar: ${total.toLocaleString()}
+</strong><br>
+` : ``}
 
 <span class="${clase}">
 ${texto}
