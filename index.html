@@ -321,7 +321,9 @@ if(!cicloActual) cicloActual=1;
 
 /* MEJORA: MES + AÑO */
 
-let mesActual = fecha.toLocaleDateString("es-ES",{
+let mesActualFecha = new Date(fecha.getFullYear(), fecha.getMonth());
+
+let mesActual = mesActualFecha.toLocaleDateString("es-ES",{
 month:"long",
 year:"numeric"
 });
@@ -337,14 +339,20 @@ document.getElementById("meses").innerHTML=
 `<span>${mesActual}</span><span>${mesSig}</span>`;
 
 let posInst=(diaInstalacion/31)*100;
+
 let posFact=(cicloActual/31)*100;
+
+/* si la factura queda antes de la instalación la movemos después */
+
+if(posFact <= posInst){
+posFact = posInst + 5;
+}
+
+let posPay=posFact+8;
+let posCharge=posFact+16;
 
 setEvent("inst","instLabel",posInst,diaInstalacion);
 setEvent("fact","factLabel",posFact,cicloActual);
-
-let posPay=posFact+10;
-let posCharge=posFact+20;
-
 setEvent("pay","payLabel",posPay,"P");
 setEvent("charge","chargeLabel",posCharge,"C");
 
