@@ -75,19 +75,13 @@ margin-bottom:5px;
 }
 
 input{
-
 width:100%;
 height:48px;
-
 padding:12px;
-
 border-radius:12px;
 border:none;
-
 font-size:14px;
-
 background:#f2f2f2;
-
 }
 
 .botones{
@@ -115,8 +109,6 @@ cursor:pointer;
 background:#d9d9d9;
 color:#333;
 }
-
-/* timeline */
 
 .meses{
 display:flex;
@@ -184,6 +176,12 @@ font-size:15px;
 .good{color:#06D6A0;}
 .bad{color:#EF476F;}
 
+.warning{
+color:#FFD166;
+font-weight:600;
+margin-top:10px;
+}
+
 .modal{
 position:fixed;
 top:0;
@@ -239,10 +237,10 @@ margin-bottom:10px;
 <input type="date" id="fecha">
 
 <label>Valor plan</label>
-<input type="number" id="plan" placeholder="0" min="0">
+<input type="number" id="plan" placeholder="0">
 
 <label>Anticipo</label>
-<input type="number" id="anticipo" placeholder="0" min="0">
+<input type="number" id="anticipo" placeholder="0">
 
 <div class="botones">
 <button onclick="simular()">Simular</button>
@@ -266,16 +264,14 @@ margin-bottom:10px;
 <div class="event pay top" id="pay">P</div>
 <div class="label top" id="payLabel">Pago</div>
 
-<div class="event charge top" id="charge">C</div>
-<div class="label top" id="chargeLabel">Cargo</div>
+<div class="event charge top" id="charge">V</div>
+<div class="label top" id="chargeLabel">Vence</div>
 
 </div>
 
 <div class="result" id="info"></div>
 
 </div>
-
-<!-- ayuda -->
 
 <div class="modal" id="modalAyuda">
 
@@ -318,8 +314,6 @@ let ciclos=[1,7,15,21];
 cicloActual=ciclos.find(c=>c>diaInstalacion);
 if(!cicloActual) cicloActual=1;
 
-/* MESES: siempre mes de instalación → mes siguiente */
-
 let mesActual = fecha.toLocaleDateString("es-ES",{month:"long",year:"numeric"});
 let mesSigFecha = new Date(fecha.getFullYear(),fecha.getMonth()+1);
 let mesSig = mesSigFecha.toLocaleDateString("es-ES",{month:"long",year:"numeric"});
@@ -327,30 +321,20 @@ let mesSig = mesSigFecha.toLocaleDateString("es-ES",{month:"long",year:"numeric"
 document.getElementById("meses").innerHTML=
 `<span>${mesActual}</span><span>${mesSig}</span>`;
 
-/* POSICIONES */
-
 let posInst=(diaInstalacion/31)*100;
-
-/* si el ciclo cae antes del día de instalación,
-   la factura pasa al mes siguiente */
-
 let posFact=(cicloActual/31)*100;
 
-if(cicloActual <= diaInstalacion){
-posFact = posInst + 5;
+if(posFact<=posInst){
+posFact=posInst+5;
 }
 
-/* asegurar orden */
-
-let posPay = posFact + 8;
-let posCharge = posPay + 8;
+let posPay=posFact+8;
+let posCharge=posPay+8;
 
 setEvent("inst","instLabel",posInst,diaInstalacion);
 setEvent("fact","factLabel",posFact,cicloActual);
 setEvent("pay","payLabel",posPay,"P");
-setEvent("charge","chargeLabel",posCharge,"C");
-
-/* cálculo */
+setEvent("charge","chargeLabel",posCharge,"V");
 
 let plan=parseFloat(document.getElementById("plan").value)||0;
 let anticipo=parseFloat(document.getElementById("anticipo").value)||0;
@@ -401,13 +385,13 @@ check(pos);
 
 function check(pos){
 
-let cargoPos=parseFloat(
+let vencPos=parseFloat(
 document.getElementById("charge").style.left
 );
 
-if(pos>cargoPos){
+if(pos>vencPos){
 
-actualizarEstado("Genera cargo administrativo","bad");
+mostrarFactura2();
 
 }else{
 
@@ -417,29 +401,36 @@ actualizarEstado("Pago dentro del plazo","good");
 
 }
 
-function actualizarEstado(texto,clase){
+function mostrarFactura2(){
 
-let total = saldoActual;
+let plan=parseFloat(document.getElementById("plan").value)||0;
 
-if(texto === "Genera cargo administrativo"){
-total = saldoActual + 12000;
-}
+let total = plan + saldoActual + 12000;
 
 document.getElementById("info").innerHTML=
 
 `
-Ciclo asignado: ${cicloActual}<br>
-Prorrateo exonerado: ${diaInstalacion} → ${cicloActual}<br><br>
+<div class="warning">
+⚠ Cliente no pagó la primera factura
+</div>
 
+Saldo factura 1: ${saldoActual.toLocaleString()}<br>
+Plan siguiente factura: ${plan.toLocaleString()}<br>
+Cargo administrativo: 12.000<br><br>
+
+<strong style="font-size:20px;color:#FFD166">
+Total Factura 2: ${total.toLocaleString()}
+</strong>
+`;
+
+}
+
+function actualizarEstado(texto,clase){
+
+document.getElementById("info").innerHTML=
+
+`
 Saldo primera factura: ${saldoActual.toLocaleString()}<br>
-
-${texto === "Genera cargo administrativo" ? `
-Cargo administrativo: 12,000<br><br>
-
-<strong style="font-size:18px;color:#FFD166;">
-Total a pagar: ${total.toLocaleString()}
-</strong><br>
-` : ``}
 
 <span class="${clase}">
 ${texto}
@@ -451,27 +442,12 @@ ${texto}
 function limpiar(){
 
 document.getElementById("fecha").value="";
-
-document.getElementById("plan").value=0;
-document.getElementById("anticipo").value=0;
+document.getElementById("plan").value="";
+document.getElementById("anticipo").value="";
 
 document.getElementById("info").innerHTML="";
 document.getElementById("meses").innerHTML="";
 
-/* limpiar posiciones de timeline */
-
-document.getElementById("inst").style.left="";
-document.getElementById("fact").style.left="";
-document.getElementById("pay").style.left="";
-document.getElementById("charge").style.left="";
-
-document.getElementById("instLabel").style.left="";
-document.getElementById("factLabel").style.left="";
-document.getElementById("payLabel").style.left="";
-document.getElementById("chargeLabel").style.left="";
-
-document.getElementById("inst").innerHTML="";
-document.getElementById("fact").innerHTML="";
 }
 
 function abrirAyuda(){
