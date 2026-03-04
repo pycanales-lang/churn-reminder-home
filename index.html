@@ -5,7 +5,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<title>Simulador Churn</title>
+<title>Churn Timeline Simulator</title>
 
 <style>
 
@@ -16,48 +16,74 @@ color:white;
 padding:20px;
 }
 
+h2{
+text-align:center;
+}
+
+.panel{
+background:rgba(255,255,255,0.1);
+padding:20px;
+border-radius:12px;
+margin-bottom:20px;
+}
+
+input,select{
+width:100%;
+padding:12px;
+margin-top:8px;
+margin-bottom:10px;
+border-radius:8px;
+border:none;
+}
+
 .timeline{
-
 position:relative;
-height:100px;
+height:120px;
 margin-top:40px;
-
 }
 
 .line{
-
 position:absolute;
 top:50%;
 left:0;
 width:100%;
 height:4px;
 background:white;
-
 }
 
 .event{
-
 position:absolute;
 top:50%;
 transform:translate(-50%,-50%);
-width:28px;
-height:28px;
-
-background:#FFD166;
+width:32px;
+height:32px;
 border-radius:50%;
-
+background:#FFD166;
 cursor:pointer;
-
 }
+
+.event.install{background:#06D6A0;}
+.event.invoice{background:#FFD166;}
+.event.pay{background:#4CC9F0;}
+.event.charge{background:#EF476F;}
 
 .label{
-
 position:absolute;
-top:65%;
+top:70%;
 transform:translateX(-50%);
 font-size:12px;
-
+text-align:center;
 }
+
+.status{
+text-align:center;
+margin-top:20px;
+font-size:18px;
+font-weight:bold;
+}
+
+.good{color:#06D6A0;}
+.bad{color:#EF476F;}
 
 </style>
 
@@ -65,38 +91,52 @@ font-size:12px;
 
 <body>
 
-<h2>Simulador Ciclo Facturación</h2>
+<h2>Simulador de Ciclo</h2>
 
-<p>Arrastra las esferas para simular fechas</p>
+<div class="panel">
+
+<label>Fecha Instalación</label>
+<input type="date" id="instalacion">
+
+<label>Ciclo Facturación</label>
+
+<select id="ciclo">
+
+<option value="1">1</option>
+<option value="7">7</option>
+<option value="15">15</option>
+<option value="21">21</option>
+
+</select>
+
+</div>
 
 <div class="timeline">
 
 <div class="line"></div>
 
-<div class="event" id="instalacion" style="left:10%"></div>
+<div class="event install" id="instalacionDot" style="left:10%"></div>
 <div class="label" style="left:10%">Instalación</div>
 
-<div class="event" id="factura" style="left:40%"></div>
+<div class="event invoice" id="facturaDot" style="left:40%"></div>
 <div class="label" style="left:40%">Factura</div>
 
-<div class="event" id="vencimiento" style="left:70%"></div>
-<div class="label" style="left:70%">Pago</div>
+<div class="event pay" id="pagoDot" style="left:60%"></div>
+<div class="label" style="left:60%">Pago</div>
 
-<div class="event" id="cargo" style="left:90%"></div>
-<div class="label" style="left:90%">Cargo</div>
+<div class="event charge" id="cargoDot" style="left:85%"></div>
+<div class="label" style="left:85%">Cargo Adm</div>
 
 </div>
 
+<div id="estado" class="status"></div>
+
 <script>
 
-const events=document.querySelectorAll(".event");
+const pago=document.getElementById("pagoDot");
 
-events.forEach(event=>{
-
-event.addEventListener("touchmove",move);
-event.addEventListener("mousemove",move);
-
-});
+pago.addEventListener("touchmove",move);
+pago.addEventListener("mousemove",move);
 
 function move(e){
 
@@ -116,7 +156,27 @@ let pos=(x-rect.left)/rect.width*100;
 if(pos<0) pos=0;
 if(pos>100) pos=100;
 
-this.style.left=pos+"%";
+pago.style.left=pos+"%";
+
+checkStatus(pos);
+
+}
+
+function checkStatus(pos){
+
+let estado=document.getElementById("estado");
+
+if(pos<75){
+
+estado.innerHTML="Pago a tiempo ✔";
+estado.className="status good";
+
+}else{
+
+estado.innerHTML="Genera cargo administrativo ⚠";
+estado.className="status bad";
+
+}
 
 }
 
