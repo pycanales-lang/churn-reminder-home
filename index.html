@@ -1,80 +1,120 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
+
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Churn Calculator PRO</title>
-<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&display=swap" rel="stylesheet">
+
+<title>Churn Tool HOME</title>
+
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
 
 <style>
+
 :root{
-    --tigo-blue:#0033A0;
-    --tigo-light:#0057D9;
-    --gradient:linear-gradient(135deg,#0033A0,#0057D9);
+--tigo:#0033A0;
+--tigo2:#0057D9;
 }
 
 body{
-    margin:0;
-    font-family:'Poppins', sans-serif;
-    background:var(--gradient);
-    color:white;
+margin:0;
+font-family:'Poppins',sans-serif;
+background:linear-gradient(135deg,#0033A0,#0057D9);
+color:white;
 }
 
 .container{
-    max-width:500px;
-    margin:auto;
-    padding:20px;
+max-width:420px;
+margin:auto;
+padding:20px;
 }
 
 .header{
-    display:flex;
-    justify-content:space-between;
-    align-items:center;
+display:flex;
+justify-content:space-between;
+align-items:center;
+margin-bottom:20px;
 }
 
-h1{
-    font-size:20px;
+.title{
+font-size:20px;
+font-weight:600;
+}
+
+.help{
+width:36px;
+height:36px;
+background:white;
+color:#0033A0;
+border-radius:50%;
+display:flex;
+align-items:center;
+justify-content:center;
+font-weight:bold;
+cursor:pointer;
 }
 
 .card{
-    background:rgba(255,255,255,0.1);
-    backdrop-filter:blur(10px);
-    padding:20px;
-    border-radius:18px;
-    margin-top:20px;
+
+background:rgba(255,255,255,0.12);
+padding:18px;
+border-radius:16px;
+margin-bottom:15px;
+
+}
+
+.section-title{
+font-size:14px;
+font-weight:600;
+margin-bottom:10px;
+opacity:0.9;
+}
+
+.input-group{
+margin-bottom:12px;
+}
+
+label{
+font-size:12px;
+opacity:0.8;
+display:block;
+margin-bottom:4px;
 }
 
 input,select{
-    width:100%;
-    padding:12px;
-    border-radius:10px;
-    border:none;
-    margin-bottom:10px;
-    font-size:14px;
+
+width:100%;
+padding:12px;
+border-radius:10px;
+border:none;
+font-size:14px;
+
 }
 
 button{
-    width:100%;
-    padding:12px;
-    border-radius:12px;
-    border:none;
-    background:white;
-    color:var(--tigo-blue);
-    font-weight:600;
-    font-size:15px;
-    cursor:pointer;
+
+width:100%;
+padding:14px;
+border:none;
+border-radius:12px;
+background:white;
+color:#0033A0;
+font-weight:600;
+font-size:15px;
+cursor:pointer;
+
 }
 
 .result{
-    margin-top:15px;
+margin-top:15px;
 }
 
 .alert{
-    padding:12px;
-    border-radius:12px;
-    margin-bottom:10px;
-    text-align:center;
-    font-weight:600;
+padding:12px;
+border-radius:10px;
+margin-bottom:8px;
+font-weight:600;
+text-align:center;
 }
 
 .low{background:#06D6A0;color:black;}
@@ -82,41 +122,136 @@ button{
 .high{background:#EF476F;}
 
 .summary{
-    font-size:13px;
-    opacity:0.9;
-    margin-top:10px;
+font-size:13px;
+opacity:0.9;
+margin-top:10px;
+line-height:1.5;
 }
+
+.modal{
+
+position:fixed;
+top:0;
+left:0;
+width:100%;
+height:100%;
+background:rgba(0,0,0,0.8);
+display:none;
+justify-content:center;
+align-items:center;
+
+}
+
+.modal-content{
+
+background:white;
+padding:10px;
+border-radius:12px;
+max-width:90%;
+max-height:90%;
+overflow:auto;
+
+}
+
+.modal img{
+width:100%;
+}
+
+.close{
+text-align:right;
+font-weight:bold;
+cursor:pointer;
+color:black;
+}
+
 </style>
+
 </head>
 
 <body>
 
 <div class="container">
 
-<h1>📊 Churn Calculator PRO</h1>
+<div class="header">
+<div class="title">📊 Churn Tool</div>
+<div class="help" onclick="abrirAyuda()">?</div>
+</div>
+
+<!-- DATOS CUENTA -->
 
 <div class="card">
 
-<input type="text" id="cuenta" placeholder="Número de Cuenta">
+<div class="section-title">DATOS DE LA CUENTA</div>
 
-<label>Fecha Activación</label>
+<div class="input-group">
+<label>Número de Cuenta</label>
+<input type="text" id="cuenta" placeholder="Ej: 40021987">
+</div>
+
+<div class="input-group">
+<label>Fecha de Instalación</label>
 <input type="date" id="fechaActivacion">
+</div>
 
-<label>Ciclo</label>
+<div class="input-group">
+<label>Ciclo de Facturación</label>
 <select id="ciclo">
 <option value="1">Ciclo 1</option>
 <option value="7">Ciclo 7</option>
 <option value="15">Ciclo 15</option>
 <option value="21">Ciclo 21</option>
 </select>
+</div>
 
-<input type="number" id="valorPlan" placeholder="Valor Plan (Gs)" value="180000">
-<input type="number" id="anticipo" placeholder="Anticipo (Gs)" value="111000">
-<input type="number" id="pagosRealizados" placeholder="Pagos Realizados (Gs)" value="0">
+</div>
 
-<button onclick="calcular()">Calcular Estado</button>
+<!-- PLAN -->
 
-<div class="result" id="resultado"></div>
+<div class="card">
+
+<div class="section-title">DATOS DEL PLAN</div>
+
+<div class="input-group">
+<label>Valor del Plan (Gs)</label>
+<input type="number" id="valorPlan" placeholder="Ej: 180000">
+</div>
+
+<div class="input-group">
+<label>Pago Anticipo (Gs)</label>
+<input type="number" id="anticipo" placeholder="Ej: 111000">
+</div>
+
+</div>
+
+<!-- PAGOS -->
+
+<div class="card">
+
+<div class="section-title">PAGOS DEL CLIENTE</div>
+
+<div class="input-group">
+<label>Pagos Realizados (Gs)</label>
+<input type="number" id="pagos" placeholder="Ej: 50000">
+</div>
+
+</div>
+
+<button onclick="calcular()">CALCULAR ESTADO</button>
+
+<div id="resultado" class="result"></div>
+
+</div>
+
+
+<!-- AYUDA -->
+
+<div class="modal" id="modalAyuda">
+
+<div class="modal-content">
+
+<div class="close" onclick="cerrarAyuda()">Cerrar ✖</div>
+
+<img src="reglas.png">
 
 </div>
 
@@ -126,62 +261,45 @@ button{
 
 function calcular(){
 
-let cuenta = document.getElementById("cuenta").value;
-let fechaActivacion = new Date(document.getElementById("fechaActivacion").value);
-let ciclo = parseInt(document.getElementById("ciclo").value);
-let valorPlan = parseFloat(document.getElementById("valorPlan").value);
-let anticipo = parseFloat(document.getElementById("anticipo").value);
-let pagos = parseFloat(document.getElementById("pagosRealizados").value);
+let valorPlan=parseFloat(document.getElementById("valorPlan").value)||0;
+let anticipo=parseFloat(document.getElementById("anticipo").value)||0;
+let pagos=parseFloat(document.getElementById("pagos").value)||0;
 
-let hoy = new Date();
+let saldo=valorPlan-anticipo-pagos;
 
-// Calcular próximo ciclo
-let fechaCiclo = new Date(fechaActivacion);
-fechaCiclo.setDate(ciclo);
+if(saldo<0) saldo=0;
 
-if(fechaCiclo < fechaActivacion){
-    fechaCiclo.setMonth(fechaCiclo.getMonth()+1);
-}
+let segunda=valorPlan+saldo+12000;
 
-// Dias mora
-let diasMora = Math.floor((hoy - fechaCiclo) / (1000*60*60*24));
-if(diasMora < 0) diasMora = 0;
+document.getElementById("resultado").innerHTML=
 
-// Saldo
-let saldoPrimera = valorPlan - anticipo - pagos;
-if(saldoPrimera < 0) saldoPrimera = 0;
+`
 
-let segundaFactura = valorPlan + saldoPrimera + 12000;
+<div class="alert medium">
 
-// Riesgo
-let riesgoClase="";
-let riesgoTexto="";
+Saldo Primera Factura: Gs ${saldo.toLocaleString()}
 
-if(diasMora <= 3){
-    riesgoClase="low";
-    riesgoTexto="RIESGO BAJO";
-}else if(diasMora <=10){
-    riesgoClase="medium";
-    riesgoTexto="RIESGO MEDIO";
-}else{
-    riesgoClase="high";
-    riesgoTexto="RIESGO ALTO - Posible Churn";
-}
-
-document.getElementById("resultado").innerHTML=`
-
-<div class="alert ${riesgoClase}">
-${riesgoTexto}
 </div>
 
-<div class="summary">
-Cuenta: <b>${cuenta}</b><br>
-Días Mora: <b>${diasMora}</b><br>
-Saldo Primera Factura: <b>Gs ${saldoPrimera.toLocaleString()}</b><br>
-Si no paga → Segunda Factura: <b>Gs ${segundaFactura.toLocaleString()}</b>
+<div class="alert high">
+
+Si no paga → Segunda Factura: Gs ${segunda.toLocaleString()}
+
 </div>
 
 `;
+
+}
+
+function abrirAyuda(){
+
+document.getElementById("modalAyuda").style.display="flex";
+
+}
+
+function cerrarAyuda(){
+
+document.getElementById("modalAyuda").style.display="none";
 
 }
 
