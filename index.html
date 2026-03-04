@@ -239,10 +239,10 @@ margin-bottom:10px;
 <input type="date" id="fecha">
 
 <label>Valor plan</label>
-<input type="number" id="plan" value="180000">
+<input type="number" id="plan" value="180000" placeholder="0">
 
 <label>Anticipo</label>
-<input type="number" id="anticipo" value="111000">
+<input type="number" id="anticipo" value="111000" placeholder="0">
 
 <div class="botones">
 <button onclick="simular()">Simular</button>
@@ -316,45 +316,41 @@ diaInstalacion=fecha.getDate();
 let ciclos=[1,7,15,21];
 
 cicloActual=ciclos.find(c=>c>diaInstalacion);
-
 if(!cicloActual) cicloActual=1;
 
-/* MEJORA: MES + AÑO */
+/* MESES: siempre mes de instalación → mes siguiente */
 
-let mesActualFecha = new Date(fecha.getFullYear(), fecha.getMonth());
-
-let mesActual = mesActualFecha.toLocaleDateString("es-ES",{
-month:"long",
-year:"numeric"
-});
-
+let mesActual = fecha.toLocaleDateString("es-ES",{month:"long",year:"numeric"});
 let mesSigFecha = new Date(fecha.getFullYear(),fecha.getMonth()+1);
-
-let mesSig = mesSigFecha.toLocaleDateString("es-ES",{
-month:"long",
-year:"numeric"
-});
+let mesSig = mesSigFecha.toLocaleDateString("es-ES",{month:"long",year:"numeric"});
 
 document.getElementById("meses").innerHTML=
 `<span>${mesActual}</span><span>${mesSig}</span>`;
 
+/* POSICIONES */
+
 let posInst=(diaInstalacion/31)*100;
+
+/* si el ciclo cae antes del día de instalación,
+   la factura pasa al mes siguiente */
 
 let posFact=(cicloActual/31)*100;
 
-/* si la factura queda antes de la instalación la movemos después */
-
-if(posFact <= posInst){
+if(cicloActual <= diaInstalacion){
 posFact = posInst + 5;
 }
 
-let posPay=posFact+8;
-let posCharge=posFact+16;
+/* asegurar orden */
+
+let posPay = posFact + 8;
+let posCharge = posPay + 8;
 
 setEvent("inst","instLabel",posInst,diaInstalacion);
 setEvent("fact","factLabel",posFact,cicloActual);
 setEvent("pay","payLabel",posPay,"P");
 setEvent("charge","chargeLabel",posCharge,"C");
+
+/* cálculo */
 
 let plan=parseFloat(document.getElementById("plan").value)||0;
 let anticipo=parseFloat(document.getElementById("anticipo").value)||0;
@@ -455,9 +451,27 @@ ${texto}
 function limpiar(){
 
 document.getElementById("fecha").value="";
+
+document.getElementById("plan").value=0;
+document.getElementById("anticipo").value=0;
+
 document.getElementById("info").innerHTML="";
 document.getElementById("meses").innerHTML="";
 
+/* limpiar posiciones de timeline */
+
+document.getElementById("inst").style.left="";
+document.getElementById("fact").style.left="";
+document.getElementById("pay").style.left="";
+document.getElementById("charge").style.left="";
+
+document.getElementById("instLabel").style.left="";
+document.getElementById("factLabel").style.left="";
+document.getElementById("payLabel").style.left="";
+document.getElementById("chargeLabel").style.left="";
+
+document.getElementById("inst").innerHTML="";
+document.getElementById("fact").innerHTML="";
 }
 
 function abrirAyuda(){
