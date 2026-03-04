@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>Simulador Churn</title>
+
+<style>
+
+body{
+font-family:Arial;
+background:#0033A0;
+color:white;
+padding:20px;
+}
+
+.timeline{
+
+position:relative;
+height:100px;
+margin-top:40px;
+
+}
+
+.line{
+
+position:absolute;
+top:50%;
+left:0;
+width:100%;
+height:4px;
+background:white;
+
+}
+
+.event{
+
+position:absolute;
+top:50%;
+transform:translate(-50%,-50%);
+width:28px;
+height:28px;
+
+background:#FFD166;
+border-radius:50%;
+
+cursor:pointer;
+
+}
+
+.label{
+
+position:absolute;
+top:65%;
+transform:translateX(-50%);
+font-size:12px;
+
+}
+
+</style>
+
+</head>
+
+<body>
+
+<h2>Simulador Ciclo Facturación</h2>
+
+<p>Arrastra las esferas para simular fechas</p>
+
+<div class="timeline">
+
+<div class="line"></div>
+
+<div class="event" id="instalacion" style="left:10%"></div>
+<div class="label" style="left:10%">Instalación</div>
+
+<div class="event" id="factura" style="left:40%"></div>
+<div class="label" style="left:40%">Factura</div>
+
+<div class="event" id="vencimiento" style="left:70%"></div>
+<div class="label" style="left:70%">Pago</div>
+
+<div class="event" id="cargo" style="left:90%"></div>
+<div class="label" style="left:90%">Cargo</div>
+
+</div>
+
+<script>
+
+const events=document.querySelectorAll(".event");
+
+events.forEach(event=>{
+
+event.addEventListener("touchmove",move);
+event.addEventListener("mousemove",move);
+
+});
+
+function move(e){
+
+let timeline=document.querySelector(".timeline");
+let rect=timeline.getBoundingClientRect();
+
+let x;
+
+if(e.touches){
+x=e.touches[0].clientX;
+}else{
+x=e.clientX;
+}
+
+let pos=(x-rect.left)/rect.width*100;
+
+if(pos<0) pos=0;
+if(pos>100) pos=100;
+
+this.style.left=pos+"%";
+
+}
+
+</script>
+
+</body>
+</html>
