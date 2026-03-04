@@ -18,6 +18,36 @@ max-width:500px;
 margin:auto;
 }
 
+.panel{
+background:rgba(255,255,255,0.1);
+padding:15px;
+border-radius:12px;
+margin-bottom:20px;
+}
+
+input{
+
+width:100%;
+padding:10px;
+margin-top:6px;
+margin-bottom:10px;
+border-radius:6px;
+border:none;
+
+}
+
+button{
+
+padding:10px;
+width:100%;
+border:none;
+border-radius:6px;
+background:white;
+color:#0033A0;
+font-weight:bold;
+
+}
+
 .timeline{
 
 position:relative;
@@ -39,8 +69,8 @@ background:white;
 .event{
 
 position:absolute;
-width:42px;
-height:42px;
+width:40px;
+height:40px;
 
 border-radius:50%;
 
@@ -49,7 +79,8 @@ align-items:center;
 justify-content:center;
 
 font-weight:bold;
-color:white;
+
+cursor:pointer;
 
 }
 
@@ -87,12 +118,15 @@ top:95%;
 transform:translateX(-50%);
 }
 
-.day{
-position:absolute;
-top:55%;
-font-size:11px;
-transform:translateX(-50%);
+.result{
+
+margin-top:20px;
+font-size:15px;
+
 }
+
+.good{color:#06D6A0;}
+.bad{color:#EF476F;}
 
 </style>
 
@@ -102,37 +136,143 @@ transform:translateX(-50%);
 
 <div class="container">
 
-<h2 style="text-align:center">Simulador de Ciclo</h2>
+<h2>Simulador Facturación</h2>
+
+<div class="panel">
+
+<label>Fecha instalación</label>
+<input type="date" id="fecha">
+
+<label>Valor plan</label>
+<input type="number" id="plan" value="180000">
+
+<label>Anticipo</label>
+<input type="number" id="anticipo" value="111000">
+
+<button onclick="simular()">Simular</button>
+
+</div>
 
 <div class="timeline">
 
 <div class="line"></div>
 
-<!-- días -->
+<div class="event install bottom" id="inst"></div>
+<div class="label bottom" id="instLabel">Inst</div>
 
-<div class="day" style="left:10%">1</div>
-<div class="day" style="left:25%">7</div>
-<div class="day" style="left:50%">15</div>
-<div class="day" style="left:75%">21</div>
-<div class="day" style="left:90%">30</div>
+<div class="event invoice bottom" id="fact"></div>
+<div class="label bottom" id="factLabel">Factura</div>
 
-<!-- eventos -->
+<div class="event pay top" id="pay">P</div>
+<div class="label top">Pago</div>
 
-<div class="event install bottom" style="left:25%">7</div>
-<div class="label bottom" style="left:25%">Instalación</div>
-
-<div class="event invoice bottom" style="left:50%">15</div>
-<div class="label bottom" style="left:50%">Emisión factura</div>
-
-<div class="event pay top" style="left:70%">20</div>
-<div class="label top" style="left:70%">Pago cliente</div>
-
-<div class="event charge top" style="left:90%">30</div>
-<div class="label top" style="left:90%">Cargo adm</div>
+<div class="event charge top" id="charge">C</div>
+<div class="label top">Cargo</div>
 
 </div>
 
+<div class="result" id="info"></div>
+
 </div>
+
+<script>
+
+function simular(){
+
+let fecha=document.getElementById("fecha").value;
+
+if(!fecha){
+alert("Ingrese fecha instalación");
+return;
+}
+
+let dia=parseInt(fecha.split("-")[2]);
+
+let ciclos=[1,7,15,21];
+
+let ciclo=ciclos.find(c=>c>dia);
+
+if(!ciclo){
+ciclo=1;
+}
+
+let posInst=dia/31*100;
+let posFact=ciclo/31*100;
+
+document.getElementById("inst").style.left=posInst+"%";
+document.getElementById("fact").style.left=posFact+"%";
+
+document.getElementById("instLabel").style.left=posInst+"%";
+document.getElementById("factLabel").style.left=posFact+"%";
+
+document.getElementById("inst").innerHTML=dia;
+document.getElementById("fact").innerHTML=ciclo;
+
+document.getElementById("pay").style.left=(posFact+10)+"%";
+document.getElementById("charge").style.left=(posFact+20)+"%";
+
+let plan=parseFloat(document.getElementById("plan").value);
+let anticipo=parseFloat(document.getElementById("anticipo").value);
+
+let saldo=plan-anticipo;
+
+document.getElementById("info").innerHTML=
+
+`
+Ciclo asignado: ${ciclo} <br>
+Prorrateo exonerado: ${dia} → ${ciclo} <br><br>
+
+Saldo primera factura: ${saldo.toLocaleString()}
+`;
+
+}
+
+const pago=document.getElementById("pay");
+
+pago.addEventListener("touchmove",move);
+pago.addEventListener("mousemove",move);
+
+function move(e){
+
+let timeline=document.querySelector(".timeline");
+let rect=timeline.getBoundingClientRect();
+
+let x;
+
+if(e.touches){
+x=e.touches[0].clientX;
+}else{
+x=e.clientX;
+}
+
+let pos=(x-rect.left)/rect.width*100;
+
+if(pos<0) pos=0;
+if(pos>100) pos=100;
+
+pago.style.left=pos+"%";
+
+check(pos);
+
+}
+
+function check(pos){
+
+let info=document.getElementById("info");
+
+if(pos<75){
+
+info.innerHTML += "<br><span class='good'>Pago dentro del plazo</span>";
+
+}else{
+
+info.innerHTML += "<br><span class='bad'>Genera cargo administrativo</span>";
+
+}
+
+}
+
+</script>
 
 </body>
 </html>
