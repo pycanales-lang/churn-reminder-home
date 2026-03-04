@@ -2,86 +2,76 @@
 <html lang="es">
 <head>
 
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-
-<title>Simulador Churn PRO</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
 
 <style>
 
 body{
-font-family:Arial;
+font-family:Poppins;
 background:#0033A0;
 color:white;
 padding:20px;
 }
 
 .container{
-max-width:500px;
+max-width:450px;
 margin:auto;
 }
 
 .title{
 text-align:center;
 font-size:22px;
-font-weight:bold;
+font-weight:600;
 margin-bottom:20px;
 }
 
 .panel{
-background:rgba(255,255,255,0.1);
+background:rgba(255,255,255,0.12);
 padding:15px;
 border-radius:12px;
 margin-bottom:20px;
 }
 
-input,select{
-
+input{
 width:100%;
 padding:12px;
 border-radius:8px;
 border:none;
 margin-top:8px;
-margin-bottom:10px;
-
 }
 
 .timeline{
-
 position:relative;
 height:120px;
 margin-top:40px;
-
 }
 
 .line{
-
 position:absolute;
 top:50%;
 width:100%;
 height:4px;
 background:white;
+}
 
+.day{
+position:absolute;
+top:60%;
+font-size:11px;
+transform:translateX(-50%);
 }
 
 .event{
-
 position:absolute;
 top:50%;
 transform:translate(-50%,-50%);
-
-width:36px;
-height:36px;
-
+width:40px;
+height:40px;
 border-radius:50%;
-
 display:flex;
 align-items:center;
 justify-content:center;
-
 font-weight:bold;
-cursor:pointer;
-
 }
 
 .install{background:#06D6A0;}
@@ -89,27 +79,11 @@ cursor:pointer;
 .pay{background:#4CC9F0;}
 .charge{background:#EF476F;}
 
-.label{
-
-position:absolute;
-top:70%;
-transform:translateX(-50%);
-font-size:12px;
-
-}
-
-.info{
-margin-top:20px;
-font-size:14px;
-}
-
 .status{
-
-margin-top:15px;
-font-size:18px;
-font-weight:bold;
+margin-top:25px;
 text-align:center;
-
+font-size:18px;
+font-weight:600;
 }
 
 .good{color:#06D6A0;}
@@ -124,19 +98,16 @@ text-align:center;
 <div class="container">
 
 <div class="title">
-Simulador Ciclo Facturación
+
+Simulador Ciclo HOME
+
 </div>
 
 <div class="panel">
 
-<label>Fecha Instalación</label>
+<label>Fecha instalación</label>
+
 <input type="date" id="fecha">
-
-<label>Valor Plan</label>
-<input type="number" id="plan" value="180000">
-
-<label>Anticipo</label>
-<input type="number" id="anticipo" value="111000">
 
 <button onclick="simular()">Simular</button>
 
@@ -146,21 +117,18 @@ Simulador Ciclo Facturación
 
 <div class="line"></div>
 
+<div class="day" style="left:5%">1</div>
+<div class="day" style="left:25%">7</div>
+<div class="day" style="left:50%">15</div>
+<div class="day" style="left:75%">21</div>
+<div class="day" style="left:95%">30</div>
+
 <div class="event install" id="inst"></div>
-<div class="label" id="instLabel">Inst</div>
-
 <div class="event invoice" id="fact"></div>
-<div class="label" id="factLabel">Factura</div>
-
 <div class="event pay" id="pay"></div>
-<div class="label">Pago</div>
-
 <div class="event charge" id="charge"></div>
-<div class="label">Cargo</div>
 
 </div>
-
-<div class="info" id="info"></div>
 
 <div id="estado" class="status"></div>
 
@@ -189,81 +157,15 @@ ciclo=1;
 
 let posInst=dia/31*100;
 let posFact=ciclo/31*100;
-let posPay=(ciclo+5)/31*100;
-let posCharge=(ciclo+10)/31*100;
 
 document.getElementById("inst").style.left=posInst+"%";
-document.getElementById("instLabel").style.left=posInst+"%";
-
 document.getElementById("fact").style.left=posFact+"%";
-document.getElementById("factLabel").style.left=posFact+"%";
-
-document.getElementById("pay").style.left=posPay+"%";
-document.getElementById("charge").style.left=posCharge+"%";
 
 document.getElementById("inst").innerHTML=dia;
 document.getElementById("fact").innerHTML=ciclo;
 
-let plan=parseFloat(document.getElementById("plan").value);
-let anticipo=parseFloat(document.getElementById("anticipo").value);
-
-let saldo=plan-anticipo;
-
-document.getElementById("info").innerHTML=
-
-`
-Instalación: ${dia} <br>
-Ciclo asignado: ${ciclo} <br>
-Prorrateo exonerado: ${dia} → ${ciclo} <br>
-Saldo primera factura: ${saldo.toLocaleString()}
-`;
-
-}
-
-const pago=document.getElementById("pay");
-
-pago.addEventListener("touchmove",move);
-pago.addEventListener("mousemove",move);
-
-function move(e){
-
-let timeline=document.querySelector(".timeline");
-let rect=timeline.getBoundingClientRect();
-
-let x;
-
-if(e.touches){
-x=e.touches[0].clientX;
-}else{
-x=e.clientX;
-}
-
-let pos=(x-rect.left)/rect.width*100;
-
-if(pos<0) pos=0;
-if(pos>100) pos=100;
-
-pago.style.left=pos+"%";
-
-check(pos);
-
-}
-
-function check(pos){
-
-let estado=document.getElementById("estado");
-
-if(pos<75){
-
-estado.innerHTML="Pago dentro del plazo ✔";
-estado.className="status good";
-
-}else{
-
-estado.innerHTML="Genera cargo administrativo ⚠";
-estado.className="status bad";
-
-}
+document.getElementById("pay").style.left=(posFact+10)+"%";
+document.getElementById("charge").style.left=(posFact+20)+"%";
 
 }
 
