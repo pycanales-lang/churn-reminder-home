@@ -2,7 +2,10 @@
 <html lang="es">
 <head>
 
-<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>Simulador Churn PRO</title>
 
 <style>
 
@@ -26,19 +29,28 @@ margin-bottom:20px;
 }
 
 .panel{
-
 background:rgba(255,255,255,0.1);
 padding:15px;
 border-radius:12px;
 margin-bottom:20px;
+}
+
+input,select{
+
+width:100%;
+padding:12px;
+border-radius:8px;
+border:none;
+margin-top:8px;
+margin-bottom:10px;
 
 }
 
 .timeline{
 
 position:relative;
-margin-top:30px;
 height:120px;
+margin-top:40px;
 
 }
 
@@ -52,23 +64,14 @@ background:white;
 
 }
 
-.marker{
-
-position:absolute;
-top:55%;
-transform:translateX(-50%);
-font-size:12px;
-
-}
-
 .event{
 
 position:absolute;
 top:50%;
 transform:translate(-50%,-50%);
 
-width:38px;
-height:38px;
+width:36px;
+height:36px;
 
 border-radius:50%;
 
@@ -77,7 +80,6 @@ align-items:center;
 justify-content:center;
 
 font-weight:bold;
-
 cursor:pointer;
 
 }
@@ -87,17 +89,25 @@ cursor:pointer;
 .pay{background:#4CC9F0;}
 .charge{background:#EF476F;}
 
-.legend{
+.label{
 
+position:absolute;
+top:70%;
+transform:translateX(-50%);
+font-size:12px;
+
+}
+
+.info{
 margin-top:20px;
 font-size:14px;
-
 }
 
 .status{
 
-margin-top:20px;
+margin-top:15px;
 font-size:18px;
+font-weight:bold;
 text-align:center;
 
 }
@@ -114,14 +124,21 @@ text-align:center;
 <div class="container">
 
 <div class="title">
-
-Simulador de Facturación
-
+Simulador Ciclo Facturación
 </div>
 
 <div class="panel">
 
-Arrastra el pago para simular cuándo paga el cliente.
+<label>Fecha Instalación</label>
+<input type="date" id="fecha">
+
+<label>Valor Plan</label>
+<input type="number" id="plan" value="180000">
+
+<label>Anticipo</label>
+<input type="number" id="anticipo" value="111000">
+
+<button onclick="simular()">Simular</button>
 
 </div>
 
@@ -129,27 +146,21 @@ Arrastra el pago para simular cuándo paga el cliente.
 
 <div class="line"></div>
 
-<div class="marker" style="left:5%">1</div>
-<div class="marker" style="left:20%">7</div>
-<div class="marker" style="left:40%">15</div>
-<div class="marker" style="left:60%">21</div>
-<div class="marker" style="left:85%">30</div>
+<div class="event install" id="inst"></div>
+<div class="label" id="instLabel">Inst</div>
 
-<div class="event install" style="left:20%">7</div>
-<div class="event invoice" style="left:40%">15</div>
-<div class="event pay" id="pago" style="left:55%">P</div>
-<div class="event charge" style="left:85%">C</div>
+<div class="event invoice" id="fact"></div>
+<div class="label" id="factLabel">Factura</div>
 
-</div>
+<div class="event pay" id="pay"></div>
+<div class="label">Pago</div>
 
-<div class="legend">
-
-🟢 Instalación  
-🟡 Emisión Factura  
-🔵 Pago Cliente  
-🔴 Cargo Administrativo  
+<div class="event charge" id="charge"></div>
+<div class="label">Cargo</div>
 
 </div>
+
+<div class="info" id="info"></div>
 
 <div id="estado" class="status"></div>
 
@@ -157,7 +168,59 @@ Arrastra el pago para simular cuándo paga el cliente.
 
 <script>
 
-const pago=document.getElementById("pago");
+function simular(){
+
+let fecha=document.getElementById("fecha").value;
+
+if(!fecha){
+alert("Ingrese fecha instalación");
+return;
+}
+
+let dia=parseInt(fecha.split("-")[2]);
+
+let ciclos=[1,7,15,21];
+
+let ciclo=ciclos.find(c=>c>dia);
+
+if(!ciclo){
+ciclo=1;
+}
+
+let posInst=dia/31*100;
+let posFact=ciclo/31*100;
+let posPay=(ciclo+5)/31*100;
+let posCharge=(ciclo+10)/31*100;
+
+document.getElementById("inst").style.left=posInst+"%";
+document.getElementById("instLabel").style.left=posInst+"%";
+
+document.getElementById("fact").style.left=posFact+"%";
+document.getElementById("factLabel").style.left=posFact+"%";
+
+document.getElementById("pay").style.left=posPay+"%";
+document.getElementById("charge").style.left=posCharge+"%";
+
+document.getElementById("inst").innerHTML=dia;
+document.getElementById("fact").innerHTML=ciclo;
+
+let plan=parseFloat(document.getElementById("plan").value);
+let anticipo=parseFloat(document.getElementById("anticipo").value);
+
+let saldo=plan-anticipo;
+
+document.getElementById("info").innerHTML=
+
+`
+Instalación: ${dia} <br>
+Ciclo asignado: ${ciclo} <br>
+Prorrateo exonerado: ${dia} → ${ciclo} <br>
+Saldo primera factura: ${saldo.toLocaleString()}
+`;
+
+}
+
+const pago=document.getElementById("pay");
 
 pago.addEventListener("touchmove",move);
 pago.addEventListener("mousemove",move);
@@ -190,7 +253,7 @@ function check(pos){
 
 let estado=document.getElementById("estado");
 
-if(pos<70){
+if(pos<75){
 
 estado.innerHTML="Pago dentro del plazo ✔";
 estado.className="status good";
