@@ -7,87 +7,92 @@
 <style>
 
 body{
-font-family:Poppins;
+font-family:Arial;
 background:#0033A0;
 color:white;
 padding:20px;
 }
 
 .container{
-max-width:450px;
+max-width:500px;
 margin:auto;
 }
 
-.title{
-text-align:center;
-font-size:22px;
-font-weight:600;
-margin-bottom:20px;
-}
-
-.panel{
-background:rgba(255,255,255,0.12);
-padding:15px;
-border-radius:12px;
-margin-bottom:20px;
-}
-
-input{
-width:100%;
-padding:12px;
-border-radius:8px;
-border:none;
-margin-top:8px;
-}
-
 .timeline{
+
 position:relative;
-height:120px;
+height:180px;
 margin-top:40px;
+
 }
 
 .line{
+
 position:absolute;
 top:50%;
 width:100%;
 height:4px;
 background:white;
+
+}
+
+.event{
+
+position:absolute;
+width:42px;
+height:42px;
+
+border-radius:50%;
+
+display:flex;
+align-items:center;
+justify-content:center;
+
+font-weight:bold;
+color:white;
+
+}
+
+.top{
+top:20%;
+transform:translate(-50%,-50%);
+}
+
+.bottom{
+top:80%;
+transform:translate(-50%,-50%);
+}
+
+.install{background:#4CC9F0;}
+.invoice{background:#FFD166;color:black;}
+.pay{background:#06D6A0;}
+.charge{background:#EF476F;}
+
+.label{
+
+position:absolute;
+font-size:12px;
+width:100px;
+text-align:center;
+
+}
+
+.label.top{
+top:0%;
+transform:translateX(-50%);
+}
+
+.label.bottom{
+top:95%;
+transform:translateX(-50%);
 }
 
 .day{
 position:absolute;
-top:60%;
+top:55%;
 font-size:11px;
 transform:translateX(-50%);
 }
-
-.event{
-position:absolute;
-top:50%;
-transform:translate(-50%,-50%);
-width:40px;
-height:40px;
-border-radius:50%;
-display:flex;
-align-items:center;
-justify-content:center;
-font-weight:bold;
-}
-
-.install{background:#06D6A0;}
-.invoice{background:#FFD166;}
-.pay{background:#4CC9F0;}
-.charge{background:#EF476F;}
-
-.status{
-margin-top:25px;
-text-align:center;
-font-size:18px;
-font-weight:600;
-}
-
-.good{color:#06D6A0;}
-.bad{color:#EF476F;}
 
 </style>
 
@@ -97,79 +102,37 @@ font-weight:600;
 
 <div class="container">
 
-<div class="title">
-
-Simulador Ciclo HOME
-
-</div>
-
-<div class="panel">
-
-<label>Fecha instalación</label>
-
-<input type="date" id="fecha">
-
-<button onclick="simular()">Simular</button>
-
-</div>
+<h2 style="text-align:center">Simulador de Ciclo</h2>
 
 <div class="timeline">
 
 <div class="line"></div>
 
-<div class="day" style="left:5%">1</div>
+<!-- días -->
+
+<div class="day" style="left:10%">1</div>
 <div class="day" style="left:25%">7</div>
 <div class="day" style="left:50%">15</div>
 <div class="day" style="left:75%">21</div>
-<div class="day" style="left:95%">30</div>
+<div class="day" style="left:90%">30</div>
 
-<div class="event install" id="inst"></div>
-<div class="event invoice" id="fact"></div>
-<div class="event pay" id="pay"></div>
-<div class="event charge" id="charge"></div>
+<!-- eventos -->
+
+<div class="event install bottom" style="left:25%">7</div>
+<div class="label bottom" style="left:25%">Instalación</div>
+
+<div class="event invoice bottom" style="left:50%">15</div>
+<div class="label bottom" style="left:50%">Emisión factura</div>
+
+<div class="event pay top" style="left:70%">20</div>
+<div class="label top" style="left:70%">Pago cliente</div>
+
+<div class="event charge top" style="left:90%">30</div>
+<div class="label top" style="left:90%">Cargo adm</div>
 
 </div>
 
-<div id="estado" class="status"></div>
-
 </div>
-
-<script>
-
-function simular(){
-
-let fecha=document.getElementById("fecha").value;
-
-if(!fecha){
-alert("Ingrese fecha instalación");
-return;
-}
-
-let dia=parseInt(fecha.split("-")[2]);
-
-let ciclos=[1,7,15,21];
-
-let ciclo=ciclos.find(c=>c>dia);
-
-if(!ciclo){
-ciclo=1;
-}
-
-let posInst=dia/31*100;
-let posFact=ciclo/31*100;
-
-document.getElementById("inst").style.left=posInst+"%";
-document.getElementById("fact").style.left=posFact+"%";
-
-document.getElementById("inst").innerHTML=dia;
-document.getElementById("fact").innerHTML=ciclo;
-
-document.getElementById("pay").style.left=(posFact+10)+"%";
-document.getElementById("charge").style.left=(posFact+20)+"%";
-
-}
-
-</script>
 
 </body>
 </html>
