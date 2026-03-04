@@ -319,7 +319,19 @@ cicloActual=ciclos.find(c=>c>diaInstalacion);
 
 if(!cicloActual) cicloActual=1;
 
-let mesActual=fecha.toLocaleString("es-ES",{month:"long"});
+/* MEJORA: MES + AÑO */
+
+let mesActual = fecha.toLocaleDateString("es-ES",{
+month:"long",
+year:"numeric"
+});
+
+let mesSigFecha = new Date(fecha.getFullYear(),fecha.getMonth()+1);
+
+let mesSig = mesSigFecha.toLocaleDateString("es-ES",{
+month:"long",
+year:"numeric"
+});
 
 document.getElementById("meses").innerHTML=
 `<span>${mesActual}</span><span>${mesSig}</span>`;
