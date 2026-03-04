@@ -17,17 +17,24 @@
 --tigo2:#0057D9;
 }
 
-body{
+/* normalización para celular */
+
+*{
+box-sizing:border-box;
 margin:0;
+padding:0;
+}
+
+body{
 font-family:'Poppins',sans-serif;
 background:linear-gradient(135deg,#0033A0,#0057D9);
 color:white;
+padding:20px;
 }
 
 .container{
 max-width:420px;
 margin:auto;
-padding:20px;
 }
 
 .header{
@@ -65,31 +72,65 @@ margin-bottom:15px;
 .section-title{
 font-size:14px;
 font-weight:600;
-margin-bottom:10px;
+margin-bottom:12px;
 opacity:0.9;
 }
 
 .input-group{
-margin-bottom:12px;
+margin-bottom:14px;
 }
 
 label{
 font-size:12px;
-opacity:0.8;
+opacity:0.85;
 display:block;
-margin-bottom:4px;
+margin-bottom:5px;
 }
 
-input,select{
+/* INPUTS NORMALIZADOS */
+
+input,
+select{
+
 width:100%;
+height:48px;
+
 padding:12px;
-border-radius:10px;
+
+border-radius:12px;
 border:none;
+
 font-size:14px;
+font-family:'Poppins',sans-serif;
+
+background:#f2f2f2;
+
+appearance:none;
+-webkit-appearance:none;
+-moz-appearance:none;
+
+}
+
+/* flecha select */
+
+select{
+background:#f2f2f2
+url("data:image/svg+xml;utf8,<svg fill='gray' height='20' viewBox='0 0 24 24' width='20' xmlns='http://www.w3.org/2000/svg'><path d='M7 10l5 5 5-5z'/></svg>")
+no-repeat right 12px center;
+background-size:18px;
+}
+
+.botones{
+display:flex;
+gap:10px;
+margin-top:10px;
+}
+
+.botones button{
+flex:1;
 }
 
 button{
-width:100%;
 padding:14px;
 border:none;
 border-radius:12px;
@@ -98,6 +139,11 @@ color:#0033A0;
 font-weight:600;
 font-size:15px;
 cursor:pointer;
+}
+
+.btn-clear{
+background:#d9d9d9;
+color:#333;
 }
 
 .result{
@@ -112,52 +158,44 @@ font-weight:600;
 text-align:center;
 }
 
-.low{background:#06D6A0;color:black;}
-.medium{background:#FFD166;color:black;}
-.high{background:#EF476F;}
-
-.summary{
-font-size:13px;
-opacity:0.9;
-margin-top:10px;
-line-height:1.5;
+.medium{
+background:#FFD166;
+color:black;
 }
 
-.botones{
-display:flex;
-gap:10px;
-margin-top:10px;
-}
-
-.botones button{
-flex:1;
-}
-
-.btn-clear{
-background:#d9d9d9;
-color:#333;
+.high{
+background:#EF476F;
 }
 
 .modal{
+
 position:fixed;
 top:0;
 left:0;
 width:100%;
 height:100%;
+
 background:rgba(0,0,0,0.85);
+
 display:none;
 justify-content:center;
 align-items:center;
+
 padding:20px;
+
 }
 
 .modal-content{
+
 background:white;
 padding:15px;
 border-radius:12px;
+
 max-width:500px;
 max-height:90%;
+
 overflow:auto;
+
 }
 
 .modal-content img{
@@ -183,10 +221,12 @@ margin-bottom:10px;
 <div class="container">
 
 <div class="header">
-<div class="title">📊 Churn Tool</div>
-<div class="help" onclick="abrirAyuda()">?</div>
-</div>
 
+<div class="title">📊 Churn Tool</div>
+
+<div class="help" onclick="abrirAyuda()">?</div>
+
+</div>
 
 <!-- DATOS CUENTA -->
 
@@ -206,16 +246,19 @@ margin-bottom:10px;
 
 <div class="input-group">
 <label>Ciclo de Facturación</label>
+
 <select id="ciclo">
+
 <option value="1">Ciclo 1</option>
 <option value="7">Ciclo 7</option>
 <option value="15">Ciclo 15</option>
 <option value="21">Ciclo 21</option>
+
 </select>
-</div>
 
 </div>
 
+</div>
 
 <!-- PLAN -->
 
@@ -234,7 +277,6 @@ margin-bottom:10px;
 </div>
 
 </div>
-
 
 <!-- PAGOS -->
 
@@ -282,7 +324,6 @@ margin-bottom:10px;
 </div>
 
 
-
 <script>
 
 function calcular(){
@@ -303,16 +344,20 @@ document.getElementById("resultado").innerHTML=
 
 `
 <div class="alert medium">
+
 Saldo Primera Factura: Gs ${saldo.toLocaleString()}
+
 </div>
 
 <div class="alert high">
+
 Si no paga → Segunda Factura: Gs ${segunda.toLocaleString()}
+
 </div>
+
 `;
 
 }
-
 
 function limpiar(){
 
@@ -325,7 +370,6 @@ document.getElementById("pagos").value="";
 document.getElementById("resultado").innerHTML="";
 
 }
-
 
 function abrirAyuda(){
 
