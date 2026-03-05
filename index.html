@@ -358,7 +358,19 @@ let mes2=formatoPeriodo(new Date(fecha.getFullYear(),fecha.getMonth()+1))
 meses.innerHTML=`<span>${mes1}</span><span>${mes2}</span>`
 
 let posInst=(dia/31)*100
-let posFact=(ciclo/31)*100
+let posFact
+
+/* SI INSTALACION ES DESPUES DEL CICLO */
+
+if(dia>ciclo){
+
+posFact=((31+ciclo)/62)*100
+
+}else{
+
+posFact=(ciclo/31)*100
+
+}
 
 let posPay=45
 let posVence=60
