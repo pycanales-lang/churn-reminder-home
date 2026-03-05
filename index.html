@@ -383,6 +383,7 @@ expandir()
 
 }else{
 
+contraer()
 mostrarEstadoNormal()
 
 }
@@ -431,6 +432,28 @@ Total Factura 2: ${total.toLocaleString()}
 
 }
 
+function contraer(){
+
+fact2.style.display="none"
+fact2Label.style.display="none"
+
+corte.style.display="none"
+corteLabel.style.display="none"
+
+vence2.style.display="none"
+vence2Label.style.display="none"
+
+/* volver a mostrar solo dos meses */
+
+let fecha=new Date(document.getElementById("fecha").value)
+
+let mes1=formatoPeriodo(fecha)
+let mes2=formatoPeriodo(new Date(fecha.getFullYear(),fecha.getMonth()+1))
+
+meses.innerHTML=`<span>${mes1}</span><span>${mes2}</span>`
+
+}
+  
 function mostrarEstadoNormal(){
 
 let plan=parseFloat(document.getElementById("plan").value)||0
