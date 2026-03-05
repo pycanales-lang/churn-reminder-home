@@ -433,11 +433,11 @@ vence2Label.style.display="block"
 let factura2=cicloActual
 let corteDia=calcularCorte(cicloActual)
 
-let posFact2=(factura2/31)*100
+let posFact2=((31 + factura2) / 62) * 100
 
 /* corte pertenece al siguiente ciclo */
 
-let posCorte=((31 + corteDia) / 62) * 100
+llet posCorte=((31 + corteDia) / 62) * 100
 
 setPos("fact2","fact2Label",posFact2,factura2)
 setPos("corte","corteLabel",posCorte,corteDia)
