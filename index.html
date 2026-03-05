@@ -179,8 +179,6 @@ font-weight:600;
 margin-top:10px;
 }
 
-/* modal ayuda */
-
 .modal{
 position:fixed;
 top:0;
@@ -328,8 +326,6 @@ return new Date(year,mes+1,vencimiento)
 
 }
 
-/* NUEVA FUNCION CORTE SEGUN PPT */
-
 function calcularCorte(ciclo){
 
 if(ciclo==1) return 3
@@ -360,8 +356,6 @@ let mes1=formatoPeriodo(fecha)
 let mes2=formatoPeriodo(new Date(fecha.getFullYear(),fecha.getMonth()+1))
 
 meses.innerHTML=`<span>${mes1}</span><span>${mes2}</span>`
-
-/* POSICION REAL POR DIA */
 
 let posInst=(dia/31)*100
 let posFact=(ciclo/31)*100
@@ -428,16 +422,13 @@ corteLabel.style.display="block"
 vence2.style.display="flex"
 vence2Label.style.display="block"
 
-/* POSICION REAL FACTURA2 Y CORTE */
-
 let factura2=cicloActual
 let corteDia=calcularCorte(cicloActual)
 
-let posFact2=((31 + factura2) / 62) * 100
+/* CORRECCION PARA NO ENCIMAR */
 
-/* corte pertenece al siguiente ciclo */
-
-llet posCorte=((31 + corteDia) / 62) * 100
+let posFact2=((31+factura2)/62)*100
+let posCorte=((31+corteDia)/62)*100
 
 setPos("fact2","fact2Label",posFact2,factura2)
 setPos("corte","corteLabel",posCorte,corteDia)
