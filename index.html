@@ -304,35 +304,19 @@ margin-bottom:10px;
 let saldoActual=0
 let cicloActual=0
 
+/* TABLA MAESTRA CICLOS */
+
+const tablaCiclos={
+1:{emision:1,pagoIni:2,pagoFin:14,vence:15,corte:3},
+7:{emision:7,pagoIni:8,pagoFin:20,vence:21,corte:9},
+15:{emision:15,pagoIni:16,pagoFin:29,vence:1,corte:17},
+21:{emision:21,pagoIni:22,pagoFin:3,vence:5,corte:4}
+}
+
 function formatoPeriodo(fecha){
 let year=fecha.getFullYear()
 let mes=(fecha.getMonth()+1).toString().padStart(2,"0")
 return year+mes
-}
-
-function calcularVencimiento(ciclo,fecha){
-
-let year=fecha.getFullYear()
-let mes=fecha.getMonth()
-
-let vencimiento
-
-if(ciclo==1) vencimiento=15
-if(ciclo==7) vencimiento=21
-if(ciclo==15) vencimiento=30
-if(ciclo==21) vencimiento=4
-
-return new Date(year,mes+1,vencimiento)
-
-}
-
-function calcularCorte(ciclo){
-
-if(ciclo==1) return 3
-if(ciclo==7) return 3
-if(ciclo==15) return 4
-if(ciclo==21) return 4
-
 }
 
 function simular(){
@@ -352,29 +336,27 @@ let ciclo=ciclos.find(c=>c>dia) || 1
 
 cicloActual=ciclo
 
+let datos=tablaCiclos[ciclo]
+
 let mes1=formatoPeriodo(fecha)
 let mes2=formatoPeriodo(new Date(fecha.getFullYear(),fecha.getMonth()+1))
 
 meses.innerHTML=`<span>${mes1}</span><span>${mes2}</span>`
 
-/* MEJORA AGREGADA ESCALA 62 DIAS */
+/* ESCALA TIMELINE 62 DIAS */
 
 let posInst=(dia/62)*100
 
 let posFact
 
 if(dia>ciclo){
-
 posFact=((31+ciclo)/62)*100
-
 }else{
-
 posFact=(ciclo/62)*100
-
 }
 
 let posPay=45
-let posVence=60
+let posVence=(datos.vence/62)*100
 
 setPos("inst","instLabel",posInst,dia)
 setPos("fact","factLabel",posFact,ciclo)
@@ -414,14 +396,10 @@ payLabel.style.left=pos+"%"
 let vence=parseFloat(document.getElementById("vence").style.left)
 
 if(pos>vence){
-
 expandir()
-
 }else{
-
 contraer()
 mostrarEstadoNormal()
-
 }
 
 }
@@ -435,13 +413,12 @@ corteLabel.style.display="block"
 vence2.style.display="flex"
 vence2Label.style.display="block"
 
-let factura2=cicloActual
-let corteDia=calcularCorte(cicloActual)
+let datos=tablaCiclos[cicloActual]
 
-/* MEJORA ESCALA CORRECTA */
+let factura2=cicloActual
+let corteDia=datos.corte
 
 let posFact2=((31+factura2)/62)*100
-
 let posCorte=posFact2+((corteDia/62)*100)
 
 setPos("fact2","fact2Label",posFact2,factura2)
@@ -475,17 +452,6 @@ Cargo administrativo: 12.000<br><br>
 Total Factura 2: ${total.toLocaleString()}
 </strong>`
 
-let venc1=calcularVencimiento(cicloActual,fecha)
-
-let venc2=new Date(venc1)
-venc2.setMonth(venc2.getMonth()+1)
-
-detalleFacturacion.innerHTML=`
-Ciclo asignado: <strong>${cicloActual}</strong><br>
-Vencimiento Factura 1: <strong>${venc1.toLocaleDateString()}</strong><br>
-Vencimiento Factura 2: <strong>${venc2.toLocaleDateString()}</strong>
-`
-
 }
 
 function contraer(){
@@ -496,13 +462,6 @@ corte.style.display="none"
 corteLabel.style.display="none"
 vence2.style.display="none"
 vence2Label.style.display="none"
-
-let fecha=new Date(document.getElementById("fecha").value)
-
-let mes1=formatoPeriodo(fecha)
-let mes2=formatoPeriodo(new Date(fecha.getFullYear(),fecha.getMonth()+1))
-
-meses.innerHTML=`<span>${mes1}</span><span>${mes2}</span>`
 
 }
 
@@ -516,15 +475,6 @@ saldoActual=plan-anticipo
 info.innerHTML=
 `Saldo primera factura: ${saldoActual.toLocaleString()}<br>
 <span class="good">Pago dentro del plazo</span>`
-
-let fecha=new Date(document.getElementById("fecha").value)
-
-let venc1=calcularVencimiento(cicloActual,fecha)
-
-detalleFacturacion.innerHTML=`
-Ciclo asignado: <strong>${cicloActual}</strong><br>
-Vencimiento Factura 1: <strong>${venc1.toLocaleDateString()}</strong>
-`
 
 }
 
