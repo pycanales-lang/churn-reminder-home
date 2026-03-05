@@ -47,6 +47,19 @@ font-size:20px;
 font-weight:600;
 }
 
+.help{
+width:36px;
+height:36px;
+background:white;
+color:#0033A0;
+border-radius:50%;
+display:flex;
+align-items:center;
+justify-content:center;
+font-weight:bold;
+cursor:pointer;
+}
+
 .card{
 background:rgba(255,255,255,0.12);
 padding:18px;
@@ -166,6 +179,44 @@ font-weight:600;
 margin-top:10px;
 }
 
+/* modal ayuda */
+
+.modal{
+position:fixed;
+top:0;
+left:0;
+width:100%;
+height:100%;
+background:rgba(0,0,0,0.85);
+display:none;
+justify-content:center;
+align-items:center;
+padding:20px;
+}
+
+.modal-content{
+background:white;
+padding:15px;
+border-radius:12px;
+max-width:500px;
+max-height:90%;
+overflow:auto;
+}
+
+.modal-content img{
+width:100%;
+margin-bottom:12px;
+border-radius:8px;
+}
+
+.close{
+text-align:right;
+font-weight:bold;
+cursor:pointer;
+color:black;
+margin-bottom:10px;
+}
+
 </style>
 
 </head>
@@ -176,6 +227,7 @@ margin-top:10px;
 
 <div class="header">
 <div class="title">Simulador Facturación</div>
+<div class="help" onclick="abrirAyuda()">?</div>
 </div>
 
 <div class="card">
@@ -229,9 +281,39 @@ margin-top:10px;
 
 </div>
 
+<!-- MODAL AYUDA -->
+
+<div class="modal" id="modalAyuda">
+
+<div class="modal-content">
+
+<div class="close" onclick="cerrarAyuda()">Cerrar ✖</div>
+
+<img src="Imagenes/Diapositiva2.PNG">
+<img src="Imagenes/Diapositiva3.PNG">
+<img src="Imagenes/Diapositiva4.PNG">
+<img src="Imagenes/Diapositiva5.PNG">
+<img src="Imagenes/Diapositiva6.PNG">
+<img src="Imagenes/Diapositiva7.PNG">
+
+</div>
+
+</div>
+
 <script>
 
 let saldoActual=0
+
+/* NUEVA FUNCION FORMATO YYYYMM */
+
+function formatoPeriodo(fecha){
+
+let year=fecha.getFullYear()
+let mes=(fecha.getMonth()+1).toString().padStart(2,"0")
+
+return year+mes
+
+}
 
 function simular(){
 
@@ -248,9 +330,8 @@ let ciclos=[1,7,15,21]
 
 let ciclo=ciclos.find(c=>c>dia) || 1
 
-let mes1=fecha.toLocaleDateString("es-ES",{month:"long",year:"numeric"})
-let mes2=new Date(fecha.getFullYear(),fecha.getMonth()+1)
-.toLocaleDateString("es-ES",{month:"long",year:"numeric"})
+let mes1=formatoPeriodo(fecha)
+let mes2=formatoPeriodo(new Date(fecha.getFullYear(),fecha.getMonth()+1))
 
 meses.innerHTML=`<span>${mes1}</span><span>${mes2}</span>`
 
@@ -323,11 +404,9 @@ setPos("vence2","vence2Label",95,"V")
 
 let fecha=new Date(document.getElementById("fecha").value)
 
-let mes1=fecha.toLocaleDateString("es-ES",{month:"long",year:"numeric"})
-let mes2=new Date(fecha.getFullYear(),fecha.getMonth()+1)
-.toLocaleDateString("es-ES",{month:"long",year:"numeric"})
-let mes3=new Date(fecha.getFullYear(),fecha.getMonth()+2)
-.toLocaleDateString("es-ES",{month:"long",year:"numeric"})
+let mes1=formatoPeriodo(fecha)
+let mes2=formatoPeriodo(new Date(fecha.getFullYear(),fecha.getMonth()+1))
+let mes3=formatoPeriodo(new Date(fecha.getFullYear(),fecha.getMonth()+2))
 
 meses.innerHTML=`<span>${mes1}</span><span>${mes2}</span><span>${mes3}</span>`
 
@@ -381,6 +460,14 @@ corteLabel.style.display="none"
 vence2.style.display="none"
 vence2Label.style.display="none"
 
+}
+
+function abrirAyuda(){
+document.getElementById("modalAyuda").style.display="flex"
+}
+
+function cerrarAyuda(){
+document.getElementById("modalAyuda").style.display="none"
 }
 
 </script>
