@@ -1,6 +1,5 @@
 <!DOCTYPE html>
 <html lang="es">
-
 <head>
 
 <meta charset="UTF-8">
@@ -90,11 +89,8 @@ gap:10px;
 margin-top:10px;
 }
 
-.botones button{
-flex:1;
-}
-
 button{
+flex:1;
 padding:14px;
 border:none;
 border-radius:12px;
@@ -119,7 +115,7 @@ font-weight:600;
 
 .timeline{
 position:relative;
-height:160px;
+height:180px;
 margin-top:20px;
 }
 
@@ -131,10 +127,17 @@ height:4px;
 background:white;
 }
 
-.event{
+.pin{
 position:absolute;
-width:42px;
-height:42px;
+transform:translateX(-50%);
+display:flex;
+flex-direction:column;
+align-items:center;
+}
+
+.pin-circle{
+width:36px;
+height:36px;
 border-radius:50%;
 display:flex;
 align-items:center;
@@ -142,31 +145,25 @@ justify-content:center;
 font-weight:bold;
 }
 
-.top{
-top:40%;
-transform:translate(-50%,-50%);
+.pin-arrow{
+width:0;
+height:0;
+border-left:7px solid transparent;
+border-right:7px solid transparent;
+border-top:10px solid white;
+margin-top:-2px;
 }
 
-.bottom{
-top:60%;
-transform:translate(-50%,-50%);
-}
-
-.install{background:#4CC9F0;}
-.invoice{background:#FFD166;color:black;}
-.pay{background:#06D6A0;}
-.charge{background:#EF476F;}
+.install .pin-circle{background:#4CC9F0;}
+.invoice .pin-circle{background:#FFD166;color:black;}
+.pay .pin-circle{background:#06D6A0;}
+.charge .pin-circle{background:#EF476F;}
 
 .label{
-position:absolute;
+margin-top:4px;
 font-size:12px;
-width:90px;
 text-align:center;
-transform:translateX(-50%);
 }
-
-.label.top{ top:15%; }
-.label.bottom{ top:75%; }
 
 .result{
 margin-top:20px;
@@ -182,42 +179,6 @@ font-weight:600;
 margin-top:10px;
 }
 
-.modal{
-position:fixed;
-top:0;
-left:0;
-width:100%;
-height:100%;
-background:rgba(0,0,0,0.85);
-display:none;
-justify-content:center;
-align-items:center;
-padding:20px;
-}
-
-.modal-content{
-background:white;
-padding:15px;
-border-radius:12px;
-max-width:500px;
-max-height:90%;
-overflow:auto;
-}
-
-.modal-content img{
-width:100%;
-margin-bottom:12px;
-border-radius:8px;
-}
-
-.close{
-text-align:right;
-font-weight:bold;
-cursor:pointer;
-color:black;
-margin-bottom:10px;
-}
-
 </style>
 
 </head>
@@ -228,7 +189,7 @@ margin-bottom:10px;
 
 <div class="header">
 <div class="title">Simulador Facturación</div>
-<div class="help" onclick="abrirAyuda()">?</div>
+<div class="help">?</div>
 </div>
 
 <div class="card">
@@ -251,130 +212,110 @@ margin-bottom:10px;
 
 <div id="meses" class="meses"></div>
 
-<!-- TIMELINE FACTURA 1 -->
-
 <div class="timeline">
 
 <div class="line"></div>
 
-<div class="event install bottom" id="inst"></div>
-<div class="label bottom" id="instLabel">Inst</div>
+<div class="pin install" id="inst">
+<div class="pin-circle"></div>
+<div class="pin-arrow"></div>
+<div class="label">Inst</div>
+</div>
 
-<div class="event invoice bottom" id="fact"></div>
-<div class="label bottom" id="factLabel">Factura</div>
+<div class="pin invoice" id="fact">
+<div class="pin-circle"></div>
+<div class="pin-arrow"></div>
+<div class="label">Factura</div>
+</div>
 
-<div class="event pay top" id="pay">P</div>
-<div class="label top" id="payLabel">Pago</div>
+<div class="pin pay" id="pay">
+<div class="pin-circle">P</div>
+<div class="pin-arrow"></div>
+<div class="label">Pago</div>
+</div>
 
-<div class="event charge top" id="charge">V</div>
-<div class="label top" id="chargeLabel">Vence</div>
+<div class="pin charge" id="vence">
+<div class="pin-circle">V</div>
+<div class="pin-arrow"></div>
+<div class="label">Vence</div>
+</div>
+
+<div class="pin invoice" id="fact2" style="display:none">
+<div class="pin-circle">2</div>
+<div class="pin-arrow"></div>
+<div class="label">Factura2</div>
+</div>
+
+<div class="pin install" id="corte" style="display:none">
+<div class="pin-circle">3</div>
+<div class="pin-arrow"></div>
+<div class="label">Corte</div>
+</div>
+
+<div class="pin charge" id="vence2" style="display:none">
+<div class="pin-circle">V</div>
+<div class="pin-arrow"></div>
+<div class="label">Vence</div>
+</div>
 
 </div>
 
-<!-- TIMELINE FACTURA 2 (OCULTA) -->
-
-<div id="timeline2" class="timeline" style="display:none">
-
-<div class="line"></div>
-
-<div class="event invoice bottom" style="left:10%">2</div>
-<div class="label bottom" style="left:10%">Factura 2</div>
-
-<div class="event install bottom" style="left:25%">3</div>
-<div class="label bottom" style="left:25%">Corte parcial</div>
-
-<div class="event pay top" style="left:55%">P</div>
-<div class="label top" style="left:55%">Pago</div>
-
-<div class="event charge top" style="left:85%">V</div>
-<div class="label top" style="left:85%">Vence</div>
-
-</div>
-
-<div class="result" id="info"></div>
-
-</div>
-
-<!-- MODAL AYUDA -->
-
-<div class="modal" id="modalAyuda">
-
-<div class="modal-content">
-
-<div class="close" onclick="cerrarAyuda()">Cerrar ✖</div>
-
-<img src="Imagenes/Diapositiva2.PNG">
-<img src="Imagenes/Diapositiva3.PNG">
-<img src="Imagenes/Diapositiva4.PNG">
-<img src="Imagenes/Diapositiva5.PNG">
-<img src="Imagenes/Diapositiva6.PNG">
-<img src="Imagenes/Diapositiva7.PNG">
-
-</div>
+<div id="info" class="result"></div>
 
 </div>
 
 <script>
 
-let cicloActual=0;
-let diaInstalacion=0;
 let saldoActual=0;
 
 function simular(){
 
-let fechaInput=document.getElementById("fecha").value;
+let fecha=new Date(document.getElementById("fecha").value);
 
-if(!fechaInput){
+if(!fecha){
 alert("Ingrese fecha instalación");
 return;
 }
 
-let fecha=new Date(fechaInput);
-
-diaInstalacion=fecha.getDate();
+let dia=fecha.getDate();
 
 let ciclos=[1,7,15,21];
 
-cicloActual=ciclos.find(c=>c>diaInstalacion);
-if(!cicloActual) cicloActual=1;
+let ciclo=ciclos.find(c=>c>dia) || 1;
 
-let mesActual = fecha.toLocaleDateString("es-ES",{month:"long",year:"numeric"});
-let mesSigFecha = new Date(fecha.getFullYear(),fecha.getMonth()+1);
-let mesSig = mesSigFecha.toLocaleDateString("es-ES",{month:"long",year:"numeric"});
+let mes1=fecha.toLocaleDateString("es-ES",{month:"long",year:"numeric"});
+let mes2=new Date(fecha.getFullYear(),fecha.getMonth()+1)
+.toLocaleDateString("es-ES",{month:"long",year:"numeric"});
 
 document.getElementById("meses").innerHTML=
-`<span>${mesActual}</span><span>${mesSig}</span>`;
+`<span>${mes1}</span><span>${mes2}</span>`;
 
-let posInst=(diaInstalacion/31)*100;
-let posFact=(cicloActual/31)*100;
+let posInst=(dia/31)*100;
+let posFact=(ciclo/31)*100;
 
-if(posFact<=posInst){
-posFact=posInst+5;
-}
+if(posFact<=posInst) posFact=posInst+5;
 
 let posPay=posFact+8;
-let posCharge=posPay+8;
+let posVence=posPay+8;
 
-setEvent("inst","instLabel",posInst,diaInstalacion);
-setEvent("fact","factLabel",posFact,cicloActual);
-setEvent("pay","payLabel",posPay,"P");
-setEvent("charge","chargeLabel",posCharge,"V");
+setPos("inst",posInst);
+setPos("fact",posFact);
+setPos("pay",posPay);
+setPos("vence",posVence);
 
-let plan=parseFloat(document.getElementById("plan").value)||0;
-let anticipo=parseFloat(document.getElementById("anticipo").value)||0;
+let plan=parseFloat(planInput.value)||0;
+let anticipo=parseFloat(anticipoInput.value)||0;
 
 saldoActual=plan-anticipo;
 
-actualizarEstado("Pago dentro del plazo","good");
+info.innerHTML=
+`Saldo primera factura: ${saldoActual.toLocaleString()}<br>
+<span class="good">Pago dentro del plazo</span>`;
 
 }
 
-function setEvent(event,label,pos,text){
-
-document.getElementById(event).style.left=pos+"%";
-document.getElementById(label).style.left=pos+"%";
-document.getElementById(event).innerHTML=text;
-
+function setPos(id,pos){
+document.getElementById(id).style.left=pos+"%";
 }
 
 const pago=document.getElementById("pay");
@@ -387,54 +328,57 @@ function move(e){
 let timeline=document.querySelector(".timeline");
 let rect=timeline.getBoundingClientRect();
 
-let x;
-
-if(e.touches){
-x=e.touches[0].clientX;
-}else{
-x=e.clientX;
-}
+let x=e.touches?e.touches[0].clientX:e.clientX;
 
 let pos=(x-rect.left)/rect.width*100;
 
-if(pos<0) pos=0;
-if(pos>100) pos=100;
+if(pos<0)pos=0;
+if(pos>100)pos=100;
 
 pago.style.left=pos+"%";
-document.getElementById("payLabel").style.left=pos+"%";
 
-check(pos);
+let vence=parseFloat(document.getElementById("vence").style.left);
 
-}
+if(pos>vence){
 
-function check(pos){
-
-let vencPos=parseFloat(
-document.getElementById("charge").style.left
-);
-
-if(pos>vencPos){
-
-mostrarFactura2();
+expandirTimeline();
 
 }else{
 
-document.getElementById("timeline2").style.display="none";
-actualizarEstado("Pago dentro del plazo","good");
+info.innerHTML=
+`Saldo primera factura: ${saldoActual.toLocaleString()}<br>
+<span class="good">Pago dentro del plazo</span>`;
 
 }
 
 }
 
-function mostrarFactura2(){
+function expandirTimeline(){
 
-let plan=parseFloat(document.getElementById("plan").value)||0;
+fact2.style.display="flex";
+corte.style.display="flex";
+vence2.style.display="flex";
 
-let total = plan + saldoActual + 12000;
+setPos("fact2",65);
+setPos("corte",72);
+setPos("vence2",90);
 
-document.getElementById("timeline2").style.display="block";
+let fecha=new Date(fechaInput.value);
 
-document.getElementById("info").innerHTML=
+let mes1=fecha.toLocaleDateString("es-ES",{month:"long",year:"numeric"});
+let mes2=new Date(fecha.getFullYear(),fecha.getMonth()+1)
+.toLocaleDateString("es-ES",{month:"long",year:"numeric"});
+let mes3=new Date(fecha.getFullYear(),fecha.getMonth()+2)
+.toLocaleDateString("es-ES",{month:"long",year:"numeric"});
+
+meses.innerHTML=
+`<span>${mes1}</span><span>${mes2}</span><span>${mes3}</span>`;
+
+let plan=parseFloat(planInput.value)||0;
+
+let total=plan+saldoActual+12000;
+
+info.innerHTML=
 
 `
 <div class="warning">
@@ -452,39 +396,18 @@ Total Factura 2: ${total.toLocaleString()}
 
 }
 
-function actualizarEstado(texto,clase){
-
-document.getElementById("info").innerHTML=
-
-`
-Saldo primera factura: ${saldoActual.toLocaleString()}<br>
-
-<span class="${clase}">
-${texto}
-</span>
-`;
-
-}
-
 function limpiar(){
 
-document.getElementById("fecha").value="";
-document.getElementById("plan").value="";
-document.getElementById("anticipo").value="";
+fechaInput.value="";
+planInput.value="";
+anticipoInput.value="";
+meses.innerHTML="";
+info.innerHTML="";
 
-document.getElementById("info").innerHTML="";
-document.getElementById("meses").innerHTML="";
+fact2.style.display="none";
+corte.style.display="none";
+vence2.style.display="none";
 
-document.getElementById("timeline2").style.display="none";
-
-}
-
-function abrirAyuda(){
-document.getElementById("modalAyuda").style.display="flex";
-}
-
-function cerrarAyuda(){
-document.getElementById("modalAyuda").style.display="none";
 }
 
 </script>
