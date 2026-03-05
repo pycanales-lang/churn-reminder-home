@@ -357,10 +357,11 @@ let mes2=formatoPeriodo(new Date(fecha.getFullYear(),fecha.getMonth()+1))
 
 meses.innerHTML=`<span>${mes1}</span><span>${mes2}</span>`
 
-let posInst=(dia/31)*100
-let posFact
+/* MEJORA AGREGADA ESCALA 62 DIAS */
 
-/* SI INSTALACION ES DESPUES DEL CICLO */
+let posInst=(dia/62)*100
+
+let posFact
 
 if(dia>ciclo){
 
@@ -368,7 +369,7 @@ posFact=((31+ciclo)/62)*100
 
 }else{
 
-posFact=(ciclo/31)*100
+posFact=(ciclo/62)*100
 
 }
 
@@ -437,13 +438,11 @@ vence2Label.style.display="block"
 let factura2=cicloActual
 let corteDia=calcularCorte(cicloActual)
 
-/* CORRECCION PARA NO ENCIMAR */
+/* MEJORA ESCALA CORRECTA */
 
 let posFact2=((31+factura2)/62)*100
 
-/* CORTE SIEMPRE DESPUES DE FACTURA2 */
-
-let posCorte=posFact2+8
+let posCorte=posFact2+((corteDia/62)*100)
 
 setPos("fact2","fact2Label",posFact2,factura2)
 setPos("corte","corteLabel",posCorte,corteDia)
