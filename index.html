@@ -440,7 +440,10 @@ let corteDia=calcularCorte(cicloActual)
 /* CORRECCION PARA NO ENCIMAR */
 
 let posFact2=((31+factura2)/62)*100
-let posCorte=((31+corteDia)/62)*100
+
+/* CORTE SIEMPRE DESPUES DE FACTURA2 */
+
+let posCorte=posFact2+8
 
 setPos("fact2","fact2Label",posFact2,factura2)
 setPos("corte","corteLabel",posCorte,corteDia)
