@@ -278,6 +278,7 @@ margin-bottom:10px;
 </div>
 
 <div id="info" class="result"></div>
+<div id="detalleFacturacion" class="result"></div>
 
 </div>
 
@@ -303,15 +304,27 @@ margin-bottom:10px;
 <script>
 
 let saldoActual=0
-
-/* NUEVA FUNCION FORMATO YYYYMM */
+let cicloActual=0
 
 function formatoPeriodo(fecha){
-
 let year=fecha.getFullYear()
 let mes=(fecha.getMonth()+1).toString().padStart(2,"0")
-
 return year+mes
+}
+
+function calcularVencimiento(ciclo,fecha){
+
+let year=fecha.getFullYear()
+let mes=fecha.getMonth()
+
+let vencimiento
+
+if(ciclo==1) vencimiento=15
+if(ciclo==7) vencimiento=21
+if(ciclo==15) vencimiento=30
+if(ciclo==21) vencimiento=4
+
+return new Date(year,mes+1,vencimiento)
 
 }
 
@@ -329,6 +342,8 @@ let dia=fecha.getDate()
 let ciclos=[1,7,15,21]
 
 let ciclo=ciclos.find(c=>c>dia) || 1
+
+cicloActual=ciclo
 
 let mes1=formatoPeriodo(fecha)
 let mes2=formatoPeriodo(new Date(fecha.getFullYear(),fecha.getMonth()+1))
@@ -430,20 +445,27 @@ Cargo administrativo: 12.000<br><br>
 Total Factura 2: ${total.toLocaleString()}
 </strong>`
 
+let venc1=calcularVencimiento(cicloActual,fecha)
+
+let venc2=new Date(venc1)
+venc2.setMonth(venc2.getMonth()+1)
+
+detalleFacturacion.innerHTML=`
+Ciclo asignado: <strong>${cicloActual}</strong><br>
+Vencimiento Factura 1: <strong>${venc1.toLocaleDateString()}</strong><br>
+Vencimiento Factura 2: <strong>${venc2.toLocaleDateString()}</strong>
+`
+
 }
 
 function contraer(){
 
 fact2.style.display="none"
 fact2Label.style.display="none"
-
 corte.style.display="none"
 corteLabel.style.display="none"
-
 vence2.style.display="none"
 vence2Label.style.display="none"
-
-/* volver a mostrar solo dos meses */
 
 let fecha=new Date(document.getElementById("fecha").value)
 
@@ -453,7 +475,7 @@ let mes2=formatoPeriodo(new Date(fecha.getFullYear(),fecha.getMonth()+1))
 meses.innerHTML=`<span>${mes1}</span><span>${mes2}</span>`
 
 }
-  
+
 function mostrarEstadoNormal(){
 
 let plan=parseFloat(document.getElementById("plan").value)||0
@@ -465,6 +487,15 @@ info.innerHTML=
 `Saldo primera factura: ${saldoActual.toLocaleString()}<br>
 <span class="good">Pago dentro del plazo</span>`
 
+let fecha=new Date(document.getElementById("fecha").value)
+
+let venc1=calcularVencimiento(cicloActual,fecha)
+
+detalleFacturacion.innerHTML=`
+Ciclo asignado: <strong>${cicloActual}</strong><br>
+Vencimiento Factura 1: <strong>${venc1.toLocaleDateString()}</strong>
+`
+
 }
 
 function limpiar(){
@@ -475,6 +506,7 @@ document.getElementById("anticipo").value=""
 
 meses.innerHTML=""
 info.innerHTML=""
+detalleFacturacion.innerHTML=""
 
 fact2.style.display="none"
 fact2Label.style.display="none"
