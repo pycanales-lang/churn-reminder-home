@@ -251,6 +251,8 @@ margin-bottom:10px;
 
 <div id="meses" class="meses"></div>
 
+<!-- TIMELINE FACTURA 1 -->
+
 <div class="timeline">
 
 <div class="line"></div>
@@ -269,9 +271,31 @@ margin-bottom:10px;
 
 </div>
 
+<!-- TIMELINE FACTURA 2 (OCULTA) -->
+
+<div id="timeline2" class="timeline" style="display:none">
+
+<div class="line"></div>
+
+<div class="event invoice bottom" style="left:10%">2</div>
+<div class="label bottom" style="left:10%">Factura 2</div>
+
+<div class="event install bottom" style="left:25%">3</div>
+<div class="label bottom" style="left:25%">Corte parcial</div>
+
+<div class="event pay top" style="left:55%">P</div>
+<div class="label top" style="left:55%">Pago</div>
+
+<div class="event charge top" style="left:85%">V</div>
+<div class="label top" style="left:85%">Vence</div>
+
+</div>
+
 <div class="result" id="info"></div>
 
 </div>
+
+<!-- MODAL AYUDA -->
 
 <div class="modal" id="modalAyuda">
 
@@ -395,6 +419,7 @@ mostrarFactura2();
 
 }else{
 
+document.getElementById("timeline2").style.display="none";
 actualizarEstado("Pago dentro del plazo","good");
 
 }
@@ -406,6 +431,8 @@ function mostrarFactura2(){
 let plan=parseFloat(document.getElementById("plan").value)||0;
 
 let total = plan + saldoActual + 12000;
+
+document.getElementById("timeline2").style.display="block";
 
 document.getElementById("info").innerHTML=
 
@@ -447,6 +474,8 @@ document.getElementById("anticipo").value="";
 
 document.getElementById("info").innerHTML="";
 document.getElementById("meses").innerHTML="";
+
+document.getElementById("timeline2").style.display="none";
 
 }
 
