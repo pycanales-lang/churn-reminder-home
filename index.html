@@ -264,13 +264,7 @@ setPos("fact","factLabel",posFact,ciclo)
 setPos("pay","payLabel",posPay,"P")
 setPos("vence","venceLabel",posVence,"V")
 
-let plan=parseFloat(planInput.value)||0
-let anticipo=parseFloat(anticipoInput.value)||0
-
-saldoActual=plan-anticipo
-
-info.innerHTML=`Saldo primera factura: ${saldoActual.toLocaleString()}<br>
-<span class="good">Pago dentro del plazo</span>`
+mostrarEstadoNormal()
 
 }
 
@@ -308,8 +302,7 @@ expandir()
 
 }else{
 
-info.innerHTML=`Saldo primera factura: ${saldoActual.toLocaleString()}<br>
-<span class="good">Pago dentro del plazo</span>`
+mostrarEstadoNormal()
 
 }
 
@@ -324,11 +317,11 @@ corteLabel.style.display="block"
 vence2.style.display="flex"
 vence2Label.style.display="block"
 
-setPos("fact2","fact2Label",70,"2")
+setPos("fact2","fact2Label",68,"2")
 setPos("corte","corteLabel",80,"3")
 setPos("vence2","vence2Label",95,"V")
 
-let fecha=new Date(fechaInput.value)
+let fecha=new Date(document.getElementById("fecha").value)
 
 let mes1=fecha.toLocaleDateString("es-ES",{month:"long",year:"numeric"})
 let mes2=new Date(fecha.getFullYear(),fecha.getMonth()+1)
@@ -338,7 +331,11 @@ let mes3=new Date(fecha.getFullYear(),fecha.getMonth()+2)
 
 meses.innerHTML=`<span>${mes1}</span><span>${mes2}</span><span>${mes3}</span>`
 
-let plan=parseFloat(planInput.value)||0
+let plan=parseFloat(document.getElementById("plan").value)||0
+let anticipo=parseFloat(document.getElementById("anticipo").value)||0
+
+saldoActual=plan-anticipo
+
 let total=plan+saldoActual+12000
 
 info.innerHTML=`<div class="warning">
@@ -352,13 +349,27 @@ Cargo administrativo: 12.000<br><br>
 <strong style="font-size:20px;color:#FFD166">
 Total Factura 2: ${total.toLocaleString()}
 </strong>`
+
+}
+
+function mostrarEstadoNormal(){
+
+let plan=parseFloat(document.getElementById("plan").value)||0
+let anticipo=parseFloat(document.getElementById("anticipo").value)||0
+
+saldoActual=plan-anticipo
+
+info.innerHTML=
+`Saldo primera factura: ${saldoActual.toLocaleString()}<br>
+<span class="good">Pago dentro del plazo</span>`
+
 }
 
 function limpiar(){
 
-fechaInput.value=""
-planInput.value=""
-anticipoInput.value=""
+document.getElementById("fecha").value=""
+document.getElementById("plan").value=""
+document.getElementById("anticipo").value=""
 
 meses.innerHTML=""
 info.innerHTML=""
