@@ -1,12 +1,10 @@
 <!DOCTYPE html>
 <html lang="es">
-
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Simulador Facturación Premium</title>
+    <title>Simulador Facturación V1</title>
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
-
     <style>
         :root { --tigo: #0033A0; --tigo2: #0057D9; }
         * { box-sizing: border-box; margin: 0; padding: 0; }
@@ -14,8 +12,11 @@
         .container { max-width: 420px; margin: auto; }
         .header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; }
         .title { font-size: 20px; font-weight: 600; }
-        .help { width: 36px; height: 36px; background: white; color: #0033A0; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: bold; cursor: pointer; transition: 0.2s; }
         
+        /* Botón de Ayuda */
+        .help { width: 36px; height: 36px; background: white; color: #0033A0; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: bold; cursor: pointer; transition: 0.3s; }
+        .help:hover { transform: scale(1.1); background: #f0f0f0; }
+
         .card { background: rgba(255,255,255,0.12); padding: 18px; border-radius: 16px; margin-bottom: 15px; backdrop-filter: blur(10px); border: 1px solid rgba(255,255,255,0.1); }
         label { font-size: 11px; opacity: 0.8; display: block; margin-bottom: 5px; text-transform: uppercase; }
         input { width: 100%; height: 48px; padding: 12px; border-radius: 12px; border: none; font-size: 14px; background: #f2f2f2; margin-bottom: 15px; outline: none; color: #333; }
@@ -24,7 +25,7 @@
         button { flex: 1; padding: 14px; border: none; border-radius: 12px; background: white; color: #0033A0; font-weight: 600; font-size: 15px; cursor: pointer; }
         .btn-clear { background: rgba(255,255,255,0.2); color: white; }
 
-        .meses { display: flex; justify-content: space-between; margin-top: 20px; font-weight: 600; opacity: 0.8; font-size: 14px; }
+        .meses { display: flex; justify-content: space-between; margin-top: 20px; font-weight: 600; opacity: 0.8; font-size: 14px; min-height: 21px; }
         
         .timeline { position: relative; height: 160px; margin-top: 10px; }
         .line { position: absolute; top: 50%; width: 100%; height: 4px; background: rgba(255,255,255,0.3); border-radius: 2px; }
@@ -33,9 +34,9 @@
         .top { top: 35%; transform: translate(-50%, -50%); }
         .bottom { top: 65%; transform: translate(-50%, -50%); }
         
-        .install { background: #4CC9F0; box-shadow: 0 0 10px rgba(76, 201, 240, 0.3); }
+        .install { background: #4CC9F0; }
         .invoice { background: #FFD166; color: black; }
-        .pay { background: #06D6A0; box-shadow: 0 0 15px rgba(6, 214, 160, 0.5); transition: none; cursor: grab; }
+        .pay { background: #06D6A0; transition: none; cursor: grab; }
         .charge { background: #EF476F; }
 
         .label { position: absolute; font-size: 11px; width: 90px; text-align: center; transform: translateX(-50%); transition: left 0.4s ease; }
@@ -46,19 +47,15 @@
         .good { color: #06D6A0; font-weight: 600; }
         .warning { color: #FFD166; font-weight: 600; margin-bottom: 5px; display: block; }
         
-        /* Gráfico de Barras */
-        .chart-container { margin-top: 15px; background: rgba(0,0,0,0.2); padding: 12px; border-radius: 12px; display: none; animation: fadeIn 0.4s ease; }
-        .bar-group { height: 14px; display: flex; border-radius: 7px; overflow: hidden; margin: 10px 0; background: rgba(255,255,255,0.1); }
-        .bar { height: 100%; transition: width 0.6s ease; }
-        .legend { display: flex; justify-content: space-between; font-size: 10px; opacity: 0.8; }
+        /* Modal Estilizado */
+        .modal { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.9); display: none; justify-content: center; align-items: center; padding: 20px; z-index: 1000; }
+        .modal-content { background: white; padding: 15px; border-radius: 16px; max-width: 500px; width: 100%; max-height: 90vh; overflow-y: auto; position: relative; color: #333; }
+        .modal-content img { width: 100%; border-radius: 8px; margin-bottom: 15px; border: 1px solid #ddd; }
+        .close-modal { position: sticky; top: 0; background: white; text-align: right; padding-bottom: 10px; font-size: 18px; font-weight: bold; cursor: pointer; color: #0033A0; z-index: 10; }
 
-        @keyframes fadeIn { from { opacity: 0; transform: translateY(5px); } to { opacity: 1; transform: translateY(0); } }
-
-        .modal { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.85); display: none; justify-content: center; align-items: center; padding: 20px; z-index: 100; }
-        .modal-content { background: white; padding: 20px; border-radius: 12px; max-width: 500px; color: #333; }
+        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
     </style>
 </head>
-
 <body>
     <div class="container">
         <div class="header">
@@ -101,34 +98,24 @@
         </div>
 
         <div id="info" class="result"></div>
-
-        <div id="chartFactura" class="chart-container">
-            <span style="font-size: 12px;">Desglose Factura 2:</span>
-            <div class="bar-group">
-                <div id="barSaldo" class="bar" style="background: #FFD166;"></div>
-                <div id="barPlan" class="bar" style="background: #4CC9F0;"></div>
-                <div id="barCargo" class="bar" style="background: #EF476F;"></div>
-            </div>
-            <div class="legend">
-                <span>● Saldo F1</span>
-                <span>● Plan Siguiente</span>
-                <span>● Cargo Adm.</span>
-            </div>
-        </div>
-
         <div id="detalleFacturacion" class="result"></div>
     </div>
 
     <div id="modalAyuda" class="modal">
         <div class="modal-content">
-            <div style="text-align:right; cursor:pointer; font-weight:bold" onclick="cerrarAyuda()">Cerrar ✖</div>
-            <h3 style="margin-bottom:10px">Guía de Ciclos</h3>
-            <p style="font-size:14px">Mueva el botón verde (P) para simular el comportamiento del cliente frente al vencimiento.</p>
+            <div class="close-modal" onclick="cerrarAyuda()">CERRAR ✖</div>
+            <img src="Imagenes/Diapositiva2.PNG" alt="Guía 2">
+            <img src="Imagenes/Diapositiva3.PNG" alt="Guía 3">
+            <img src="Imagenes/Diapositiva4.PNG" alt="Guía 4">
+            <img src="Imagenes/Diapositiva5.PNG" alt="Guía 5">
+            <img src="Imagenes/Diapositiva6.PNG" alt="Guía 6">
+            <img src="Imagenes/Diapositiva7.PNG" alt="Guía 7">
         </div>
     </div>
 
     <script>
         let cicloActual = 0;
+        let fechaBase = null;
         const tablaCiclos = {
             1: { vence: 15, corte: 3 },
             7: { vence: 21, corte: 9 },
@@ -136,6 +123,11 @@
             21: { vence: 5, corte: 4 }
         };
 
+        function formatoPeriodo(fecha) {
+            return fecha.getFullYear() + (fecha.getMonth() + 1).toString().padStart(2, "0");
+        }
+
+        // Regla de Oro: Asignación según tabla
         function obtenerCicloAsignado(dia) {
             if (dia >= 1 && dia <= 6) return 7;
             if (dia >= 7 && dia <= 14) return 15;
@@ -146,16 +138,13 @@
 
         function simular() {
             let fechaStr = document.getElementById("fecha").value;
-            if (!fechaStr) return alert("Ingrese fecha");
+            if (!fechaStr) return alert("Ingrese fecha instalación");
 
-            let fecha = new Date(fechaStr + 'T00:00:00');
-            let dia = fecha.getDate();
+            fechaBase = new Date(fechaStr + 'T00:00:00');
+            let dia = fechaBase.getDate();
             cicloActual = obtenerCicloAsignado(dia);
             
-            let m1 = fecha.getFullYear() + (fecha.getMonth() + 1).toString().padStart(2, "0");
-            let f2 = new Date(fecha.getFullYear(), fecha.getMonth() + 1, 1);
-            let m2 = f2.getFullYear() + (f2.getMonth() + 1).toString().padStart(2, "0");
-            document.getElementById("meses").innerHTML = `<span>${m1}</span><span>${m2}</span>`;
+            actualizarMeses(false);
 
             let posInst = (dia / 60) * 100;
             let posFact = (cicloActual <= dia && cicloActual !== 1) ? ((30 + cicloActual) / 60) * 100 : (cicloActual === 1 ? 52 : (cicloActual / 60) * 100);
@@ -166,8 +155,19 @@
             setPos("vence", "venceLabel", Math.min(posVence, 94), "V");
             setPos("pay", "payLabel", Math.min(posVence - 8, 85), "P");
 
-            actualizarTextos(f2, tablaCiclos[cicloActual].vence);
+            actualizarTextos(new Date(fechaBase.getFullYear(), fechaBase.getMonth() + 1, 1), tablaCiclos[cicloActual].vence);
             mostrarEstadoNormal();
+        }
+
+        function actualizarMeses(mostrarTercero) {
+            if (!fechaBase) return;
+            let m1 = formatoPeriodo(fechaBase);
+            let f2 = new Date(fechaBase.getFullYear(), fechaBase.getMonth() + 1, 1);
+            let m2 = formatoPeriodo(f2);
+            let f3 = new Date(fechaBase.getFullYear(), fechaBase.getMonth() + 2, 1);
+            let m3 = formatoPeriodo(f3);
+
+            document.getElementById("meses").innerHTML = `<span>${m1}</span><span>${m2}</span>${mostrarTercero ? `<span>${m3}</span>` : ''}`;
         }
 
         function actualizarTextos(mes2Date, diaVence) {
@@ -178,7 +178,7 @@
             document.getElementById("detalleFacturacion").innerHTML = `
                 Ciclo asignado: <strong>${cicloActual}</strong><br>
                 Vencimiento Factura 1: <strong>${fV1.toLocaleDateString()}</strong>
-                <div id="venceF2Detalle" style="display:none; color:#FFD166; margin-top:5px">Vencimiento Factura 2: <strong>${fV2.toLocaleDateString()}</strong></div>
+                <div id="venceF2Detalle" style="display:none; color:white; margin-top:5px">Vencimiento Factura 2: <strong>${fV2.toLocaleDateString()}</strong></div>
             `;
         }
 
@@ -200,13 +200,13 @@
             let vPos = parseFloat(document.getElementById("vence").style.left);
             if (pos > vPos) {
                 expandir();
+                actualizarMeses(true);
                 document.getElementById("venceF2Detalle").style.display = "block";
-                document.getElementById("chartFactura").style.display = "block";
             } else {
                 contraer();
+                actualizarMeses(false);
                 mostrarEstadoNormal();
                 document.getElementById("venceF2Detalle").style.display = "none";
-                document.getElementById("chartFactura").style.display = "none";
             }
         };
 
@@ -227,10 +227,12 @@
             let s = p - a;
             let total = p + s + 12000;
 
-            document.getElementById("info").innerHTML = `<span class="warning">⚠ No se registró pago de Factura 1</span><strong style="font-size:18px; color:#FFD166">Total Factura 2: ${total.toLocaleString()}</strong>`;
-            document.getElementById("barSaldo").style.width = (s / total * 100) + "%";
-            document.getElementById("barPlan").style.width = (p / total * 100) + "%";
-            document.getElementById("barCargo").style.width = (12000 / total * 100) + "%";
+            document.getElementById("info").innerHTML = `
+                <span class="warning">⚠ Cliente no pagó la primera factura</span>
+                Saldo factura 1: ${s.toLocaleString()}<br>
+                Plan siguiente factura: ${p.toLocaleString()}<br>
+                Cargo administrativo: 12.000<br><br>
+                <strong style="font-size:20px; color:#FFD166">Total Factura 2: ${total.toLocaleString()}</strong>`;
         }
 
         function contraer() {
@@ -240,13 +242,12 @@
         function mostrarEstadoNormal() {
             let p = parseFloat(document.getElementById("plan").value) || 0;
             let a = parseFloat(document.getElementById("anticipo").value) || 0;
-            document.getElementById("info").innerHTML = `Saldo factura 1: ${(p - a).toLocaleString()}<br><span class="good">Pago dentro del plazo ✓</span>`;
+            document.getElementById("info").innerHTML = `Saldo primera factura: ${(p - a).toLocaleString()}<br><span class="good">Pago dentro del plazo</span>`;
         }
 
-        function limpiar() {
-            location.reload();
-        }
-
+        function limpiar() { location.reload(); }
+        
+        // Funciones del Modal
         function abrirAyuda() { document.getElementById("modalAyuda").style.display = "flex"; }
         function cerrarAyuda() { document.getElementById("modalAyuda").style.display = "none"; }
     </script>
