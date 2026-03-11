@@ -1,242 +1,239 @@
 <!DOCTYPE html>
 <html lang="es">
+
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Simulador Facturación - Base Pro</title>
-    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
-    <style>
-        :root { --tigo: #0033A0; --tigo2: #0057D9; --danger: #EF476F; --warning: #FFD166; --success: #06D6A0; }
-        * { box-sizing: border-box; margin: 0; padding: 0; }
-        body { font-family: 'Poppins', sans-serif; background: linear-gradient(135deg, var(--tigo), var(--tigo2)); color: white; padding: 20px; }
-        .container { max-width: 420px; margin: auto; }
-        .header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; }
-        .title { font-size: 20px; font-weight: 600; }
-        .help { width: 36px; height: 36px; background: white; color: var(--tigo); border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: bold; cursor: pointer; }
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-        .card { background: rgba(255,255,255,0.12); padding: 18px; border-radius: 16px; margin-bottom: 15px; backdrop-filter: blur(10px); border: 1px solid rgba(255,255,255,0.1); }
-        label { font-size: 11px; opacity: 0.8; display: block; margin-bottom: 5px; text-transform: uppercase; }
-        input { width: 100%; height: 48px; padding: 12px; border-radius: 12px; border: none; font-size: 14px; background: #f2f2f2; margin-bottom: 15px; outline: none; color: #333; }
-        
-        .botones { display: flex; gap: 10px; margin-top: 5px; }
-        button { flex: 1; padding: 14px; border: none; border-radius: 12px; background: white; color: var(--tigo); font-weight: 600; font-size: 15px; cursor: pointer; }
-        .btn-clear { background: rgba(255,255,255,0.2); color: white; }
+<title>Simulador Facturación Pro - Siebel 2026</title>
 
-        .meses { display: flex; justify-content: space-between; margin-top: 20px; font-weight: 600; opacity: 0.8; font-size: 14px; min-height: 21px; }
-        .timeline { position: relative; height: 160px; margin-top: 10px; }
-        .line { position: absolute; top: 50%; width: 100%; height: 4px; background: rgba(255,255,255,0.3); border-radius: 2px; }
-        
-        .event { position: absolute; width: 40px; height: 40px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: bold; transition: left 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275); z-index: 2; }
-        .top { top: 35%; transform: translate(-50%, -50%); }
-        .bottom { top: 65%; transform: translate(-50%, -50%); }
-        
-        .install { background: #4CC9F0; }
-        .invoice { background: var(--warning); color: black; }
-        .pay { background: var(--success); transition: none; cursor: grab; }
-        .charge { background: var(--danger); }
-
-        .label { position: absolute; font-size: 11px; width: 90px; text-align: center; transform: translateX(-50%); transition: left 0.4s ease; }
-        .label.top { top: 5%; }
-        .label.bottom { top: 85%; }
-
-        /* DETALLE ESTILO IMAGEN */
-        .result { margin-top: 15px; font-size: 14px; line-height: 1.6; }
-        .warning-label { color: var(--warning); font-weight: 600; display: block; margin-bottom: 5px; }
-        .total-factura { font-size: 20px; color: var(--warning); font-weight: 600; margin: 10px 0; display: block; }
-        .tip-pago { color: var(--success); font-size: 13px; font-weight: 400; display: block; margin-top: 2px; }
-        
-        .churn-banner { margin-top: 15px; padding: 12px; border-radius: 12px; background: #8B0000; border: 2px solid var(--danger); display: none; animation: pulse 2s infinite; }
-        @keyframes pulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.7; } }
-
-        .modal { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.9); display: none; justify-content: center; align-items: center; padding: 20px; z-index: 1000; }
-        .modal-content { background: white; padding: 15px; border-radius: 16px; max-width: 500px; width: 100%; max-height: 90vh; overflow-y: auto; color: #333; }
-        .modal-content img { width: 100%; border-radius: 8px; margin-bottom: 10px; }
-    </style>
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="css/styles.css">
 </head>
+
 <body>
-    <div class="container">
-        <div class="header">
-            <div class="title">Simulador Facturación</div>
-            <div class="help" onclick="abrirAyuda()">?</div>
-        </div>
 
-        <div class="card">
-            <label>Fecha instalación</label>
-            <input type="date" id="fecha">
-            <label>Valor plan</label>
-            <input type="number" id="plan" placeholder="0">
-            <label>Anticipo</label>
-            <input type="number" id="anticipo" placeholder="0">
-            <div class="botones">
-                <button onclick="simular()">Simular</button>
-                <button class="btn-clear" onclick="limpiar()">Limpiar</button>
-            </div>
-        </div>
+<div class="container">
 
-        <div id="meses" class="meses"></div>
+<div class="header">
+<div class="title">Simulador Facturación</div>
+<div class="help" onclick="abrirAyuda()">?</div>
+</div>
 
-        <div class="timeline">
-            <div class="line"></div>
-            <div id="inst" class="event install bottom"></div>
-            <div id="instLabel" class="label bottom">Inst</div>
-            <div id="fact" class="event invoice bottom"></div>
-            <div id="factLabel" class="label bottom">Factura</div>
-            <div id="pay" class="event pay top">P</div>
-            <div id="payLabel" class="label top">Pago</div>
-            <div id="vence" class="event charge top">V</div>
-            <div id="venceLabel" class="label top">Vence</div>
-            
-            <div id="fact2" class="event invoice bottom" style="display:none">2</div>
-            <div id="fact2Label" class="label bottom" style="display:none">Factura 2</div>
-            <div id="vence2" class="event charge top" style="display:none">V</div>
-            <div id="vence2Label" class="label top" style="display:none">Vence</div>
-        </div>
+<div class="card">
 
-        <div id="info" class="result"></div>
+<label>Fecha instalación</label>
+<input type="date" id="fecha">
 
-        <div id="bannerChurn" class="churn-banner">
-            <h4 style="font-size:13px; color:white">🚨 RIESGO CRÍTICO: Early Churn</h4>
-            <p style="font-size:11px; color:#ffdadd">Cuenta nueva con pago atrasado. ¡Gestión inmediata!</p>
-        </div>
+<label>Valor plan</label>
+<input type="number" id="plan" placeholder="0">
 
-        <div id="detalleFacturacion" class="result"></div>
-    </div>
+<label>Anticipo</label>
+<input type="number" id="anticipo" placeholder="0">
 
-    <div id="modalAyuda" class="modal">
-        <div class="modal-content">
-            <div style="text-align:right; font-weight:bold; cursor:pointer" onclick="cerrarAyuda()">CERRAR ✖</div>
-            <img src="Imagenes/Diapositiva2.PNG"><img src="Imagenes/Diapositiva3.PNG"><img src="Imagenes/Diapositiva4.PNG">
-            <img src="Imagenes/Diapositiva5.PNG"><img src="Imagenes/Diapositiva6.PNG"><img src="Imagenes/Diapositiva7.PNG">
-        </div>
-    </div>
+<div class="botones">
+<button onclick="simular()">Simular</button>
+<button class="btn-clear" onclick="limpiar()">Limpiar</button>
+</div>
 
-    <script>
-        let cicloActual = 0, fechaInstalacionGlobal = null, esCuentaNueva = false;
-        const tablaCiclos = { 1: { vence: 15 }, 7: { vence: 21 }, 15: { vence: 1 }, 21: { vence: 5 } };
+</div>
 
-        function obtenerCicloAsignado(dia) {
-            if (dia <= 6) return 7; if (dia <= 14) return 15; if (dia <= 20) return 21; return 1;
-        }
+<div id="meses" class="meses"></div>
 
-        function simular() {
-            let fStr = document.getElementById("fecha").value;
-            if (!fStr) return alert("Ingrese fecha");
-            fechaInstalacionGlobal = new Date(fStr + 'T00:00:00');
-            let dia = fechaInstalacionGlobal.getDate();
-            cicloActual = obtenerCicloAsignado(dia);
-            
-            let hoy = new Date();
-            let mesesDiff = (hoy.getFullYear() - fechaInstalacionGlobal.getFullYear()) * 12 + (hoy.getMonth() - fechaInstalacionGlobal.getMonth());
-            esCuentaNueva = mesesDiff <= 4;
+<!-- CICLO DE FACTURACIÓN -->
+<div id="cicloUI" style="margin-top:10px;text-align:center;font-size:13px;font-weight:600;opacity:0.9;"></div>
 
-            actualizarMeses(false);
-            let posInst = (dia / 60) * 100;
-            let posFact = (cicloActual <= dia && cicloActual !== 1) ? ((30 + cicloActual) / 60) * 100 : (cicloActual === 1 ? 52 : (cicloActual / 60) * 100);
-            let posVence = posFact + (tablaCiclos[cicloActual].vence < cicloActual ? (tablaCiclos[cicloActual].vence + (30 - cicloActual)) / 60 * 100 : (tablaCiclos[cicloActual].vence - cicloActual) / 60 * 100);
 
-            setPos("inst", "instLabel", posInst, dia);
-            setPos("fact", "factLabel", posFact, cicloActual);
-            setPos("vence", "venceLabel", Math.min(posVence, 94), "V");
-            setPos("pay", "payLabel", Math.min(posVence - 8, 85), "P");
+<!-- ============================================== -->
+<!-- UX MOBILE: HORIZONTAL MODERNO -->
+<!-- ============================================== -->
 
-            actualizarDetalle(false);
-            document.getElementById("bannerChurn").style.display = "none";
-        }
+<div class="ux-board" id="uxBoard">
 
-        function actualizarMeses(mostrarTercero) {
-            let f = fechaInstalacionGlobal;
-            let m1 = f.getFullYear() + (f.getMonth() + 1).toString().padStart(2, "0");
-            let f2 = new Date(f.getFullYear(), f.getMonth() + 1, 1);
-            let m2 = f2.getFullYear() + (f2.getMonth() + 1).toString().padStart(2, "0");
-            let f3 = new Date(f.getFullYear(), f.getMonth() + 2, 1);
-            let m3 = f3.getFullYear() + (f3.getMonth() + 1).toString().padStart(2, "0");
-            document.getElementById("meses").innerHTML = `<span>${m1}</span><span>${m2}</span>${mostrarTercero ? `<span>${m3}</span>` : ''}`;
-        }
+<div class="slider-wrapper">
 
-        function actualizarDetalle(esAtrasado) {
-            let p = parseFloat(document.getElementById("plan").value) || 0;
-            let a = parseFloat(document.getElementById("anticipo").value) || 0;
-            let s = p - a;
+<label>
+CONTROL DE DÍAS TRANSCURRIDOS (DÍA
+<span id="ux-day" style="color:#FFF;">0</span>)
+</label>
 
-            // Fechas
-            let fEmision1 = new Date(fechaInstalacionGlobal.getFullYear(), fechaInstalacionGlobal.getMonth(), cicloActual);
-            if (cicloActual <= fechaInstalacionGlobal.getDate() && cicloActual !== 1) fEmision1.setMonth(fEmision1.getMonth() + 1);
-            if (cicloActual === 1) fEmision1.setMonth(fechaInstalacionGlobal.getMonth() + 1);
-            let fV1 = new Date(fEmision1.getFullYear(), fEmision1.getMonth(), tablaCiclos[cicloActual].vence);
-            if (tablaCiclos[cicloActual].vence < cicloActual) fV1.setMonth(fV1.getMonth() + 1);
-            let fEmision2 = new Date(fEmision1.getFullYear(), fEmision1.getMonth() + 1, cicloActual);
-            let fV2 = new Date(fV1.getFullYear(), fV1.getMonth() + 1, tablaCiclos[cicloActual].vence);
+<div class="ux-timeline-track" id="uxTrack">
 
-            // Bloque dinámico de cobro (Estilo Imagen)
-            let bloqueCobro = "";
-            if (esAtrasado) {
-                let total = p + s + 12000;
-                bloqueCobro = `
-                    <span class="warning-label">⚠ Cliente no pagó la primera factura</span>
-                    Saldo factura 1: ${s.toLocaleString()}<br>
-                    Plan siguiente factura: ${p.toLocaleString()}<br>
-                    Cargo administrativo: 12.000<br>
-                    <span class="total-factura">Total Factura 2: ${total.toLocaleString()}</span>
-                `;
-            } else {
-                bloqueCobro = `Saldo primera factura: ${s.toLocaleString()}<br><span style="color:var(--success); font-weight:600">Pago dentro del plazo</span>`;
-            }
+<!-- CICLOS -->
+<div class="ux-ciclos">
+<div class="ux-ciclo" style="left:1%">1</div>
+<div class="ux-ciclo" style="left:11.6%">7</div>
+<div class="ux-ciclo" style="left:25%">15</div>
+<div class="ux-ciclo" style="left:35%">21</div>
+</div>
 
-            document.getElementById("info").innerHTML = bloqueCobro;
+<div class="ux-event" id="ux-inst">
+<span class="ux-icon" style="background:var(--success)">🏠</span>
+<span class="ux-label">Inst</span>
+</div>
 
-            // Bloque de Fechas (Regla de Oro)
-            document.getElementById("detalleFacturacion").innerHTML = `
-                Ciclo asignado: <strong>${cicloActual}</strong><br>
-                Emisión Factura 1: <strong>${fEmision1.toLocaleDateString()}</strong>
-                ${!esAtrasado ? `<span class="tip-pago">Recomienda pagar en los primeros 3 días de emisión</span>` : ''}
-                Vencimiento Factura 1: <strong>${fV1.toLocaleDateString()}</strong>
-                <div style="display:${esAtrasado ? 'block' : 'none'}; margin-top:5px">
-                    Emisión Factura 2: <strong>${fEmision2.toLocaleDateString()}</strong><br>
-                    Vencimiento Factura 2: <strong>${fV2.toLocaleDateString()}</strong>
-                </div>
-            `;
-        }
+<div class="ux-event" id="ux-fact1">
+<span class="ux-icon">🧾</span>
+<span class="ux-label">F1</span>
+</div>
 
-        function setPos(id, label, pos, text) {
-            document.getElementById(id).style.left = pos + "%";
-            document.getElementById(label).style.left = pos + "%";
-            document.getElementById(id).innerHTML = text;
-        }
+<div class="ux-event ux-warning" id="ux-vence">
+<span class="ux-icon" style="background:var(--warning); color:black">📅</span>
+<span class="ux-label">Venc</span>
+</div>
 
-        const pago = document.getElementById("pay");
-        const move = (e) => {
-            let rect = document.querySelector(".timeline").getBoundingClientRect();
-            let x = (e.touches ? e.touches[0].clientX : e.clientX) - rect.left;
-            let pos = Math.max(0, Math.min(100, (x / rect.width) * 100));
-            pago.style.left = pos + "%";
-            document.getElementById("payLabel").style.left = pos + "%";
+<div class="ux-event ux-danger" id="ux-corte">
+<span class="ux-icon" style="background:var(--danger)">🚫</span>
+<span class="ux-label">Corte</span>
+</div>
 
-            let vPos = parseFloat(document.getElementById("vence").style.left);
-            if (pos > vPos) {
-                expandir(); actualizarMeses(true); actualizarDetalle(true);
-                if (esCuentaNueva) document.getElementById("bannerChurn").style.display = "block";
-            } else {
-                contraer(); actualizarMeses(false); actualizarDetalle(false);
-                document.getElementById("bannerChurn").style.display = "none";
-            }
-        };
+<div class="ux-event" id="ux-fact2">
+<span class="ux-icon">🧾</span>
+<span class="ux-label">F2</span>
+</div>
 
-        pago.addEventListener("mousedown", () => document.addEventListener("mousemove", move));
-        document.addEventListener("mouseup", () => document.removeEventListener("mousemove", move));
-        pago.addEventListener("touchstart", () => document.addEventListener("touchmove", move));
-        document.addEventListener("touchend", () => document.removeEventListener("touchmove", move));
+<div class="ux-event ux-warning" id="ux-vence2">
+<span class="ux-icon" style="background:var(--warning); color:black">📅</span>
+<span class="ux-label">Venc 2</span>
+</div>
 
-        function expandir() {
-            ["fact2", "fact2Label", "vence2", "vence2Label"].forEach(id => document.getElementById(id).style.display = id.includes("Label") ? "block" : "flex");
-            let vPos = parseFloat(document.getElementById("vence").style.left);
-            setPos("fact2", "fact2Label", Math.min(vPos + 12, 85), cicloActual);
-            setPos("vence2", "vence2Label", Math.min(vPos + 28, 98), "V");
-        }
+<!-- CURSOR PAGO -->
 
-        function contraer() { ["fact2", "fact2Label", "vence2", "vence2Label"].forEach(id => document.getElementById(id).style.display = "none"); }
-        function limpiar() { location.reload(); }
-        function abrirAyuda() { document.getElementById("modalAyuda").style.display = "flex"; }
-        function cerrarAyuda() { document.getElementById("modalAyuda").style.display = "none"; }
-    </script>
+<div class="ux-pago-cursor" id="ux-pago">
+<span class="ux-pago-icon">💰</span>
+<span class="ux-pago-label">Pago</span>
+</div>
+
+<input
+type="range"
+id="timeSlider"
+class="absolute-slider"
+min="0"
+max="100"
+value="0"
+step="0.1">
+
+</div>
+</div>
+
+
+<!-- RESULTADOS -->
+
+<div class="ux-status-panel">
+
+<div id="infoUX"></div>
+
+<div id="proximoEvento" style="
+margin-top:10px;
+font-size:12px;
+opacity:0.9;
+text-align:center;
+color:#FFD166;
+font-weight:600;
+"></div>
+
+<div id="ux-message" class="ux-dynamic-desc" style="display:none"></div>
+
+</div>
+
+
+<!-- FECHAS -->
+
+<div class="ux-dates-board">
+<div id="detalleFechasUX"></div>
+</div>
+
+
+<div id="bannerChurnUX" class="churn-banner" style="display:none;">
+<h4 style="font-size:13px; color:white">🚨 RIESGO CRÍTICO: Early Churn</h4>
+<p style="font-size:11px; color:#ffdadd">Cuenta nueva con pago atrasado. ¡Gestión inmediata!</p>
+</div>
+
+</div>
+
+
+<!-- ============================================================== -->
+<!-- MOTOR INVISIBLE BASE -->
+<!-- ============================================================== -->
+
+<div style="display:none; pointer-events:none;">
+
+<div class="timeline" id="timeline">
+
+<div id="playhead">
+<div id="diaBadge">Día 0</div>
+<div class="playhead-arrow"></div>
+</div>
+
+<div id="timelineTrack">
+
+<div class="line"></div>
+
+<div id="exoBar" class="exoneracion-bar"></div>
+<div id="exoLabel" class="label bottom">Prorrateo</div>
+
+<div id="inst" class="event install bottom">🏠</div>
+<div id="instLabel" class="label bottom">Inst</div>
+
+<div id="fact" class="event invoice bottom">🧾</div>
+<div id="factLabel" class="label bottom">Factura 1</div>
+
+<div id="pay" class="event pay top">💰</div>
+<div id="payLabel" class="label top">Pago</div>
+
+<div id="vence" class="event charge top">📅</div>
+<div id="venceLabel" class="label top">Vence</div>
+
+<div id="corte" class="event charge top" style="display:none">🚫</div>
+<div id="corteLabel" class="label top" style="display:none">Corte</div>
+
+<div id="fact2" class="event invoice bottom" style="display:none">🧾</div>
+<div id="fact2Label" class="label bottom" style="display:none">Factura 2</div>
+
+<div id="vence2" class="event charge top" style="display:none">📅</div>
+<div id="vence2Label" class="label top" style="display:none">Vence 2</div>
+
+<div id="corteT" class="event charge-total top" style="display:none">🚫</div>
+<div id="corteTLabel" class="label top" style="display:none">Corte Total</div>
+
+</div>
+</div>
+
+<div id="info" class="result"></div>
+<div id="detalleFacturacion" class="result"></div>
+
+<div id="bannerChurn" class="churn-banner">
+<h4 style="font-size:13px; color:white">🚨 RIESGO CRÍTICO: Early Churn</h4>
+<p style="font-size:11px; color:#ffdadd">Cuenta nueva con pago atrasado. ¡Gestión inmediata!</p>
+</div>
+
+</div>
+
+
+<!-- MODAL AYUDA -->
+
+<div id="modalAyuda" class="modal">
+
+<div class="modal-content">
+
+<div style="text-align:right;font-weight:bold;cursor:pointer" onclick="cerrarAyuda()">
+CERRAR ✖
+</div>
+
+<img src="assets/Imagenes/Diapositiva2.PNG">
+<img src="assets/Imagenes/Diapositiva3.PNG">
+<img src="assets/Imagenes/Diapositiva4.PNG">
+<img src="assets/Imagenes/Diapositiva5.PNG">
+<img src="assets/Imagenes/Diapositiva6.PNG">
+<img src="assets/Imagenes/Diapositiva7.PNG">
+
+</div>
+
+</div>
+
+</div>
+
+<script src="js/app.js"></script>
+
 </body>
 </html>
