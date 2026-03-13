@@ -26,38 +26,63 @@ function obtenerCicloAsignado(dia) {
     return 1;
 }
 
-function generarMesesDinamicos() {
-    const contenedor = document.getElementById("meses");
-    contenedor.innerHTML = ""; // Limpiar contenido previo
+function simular() {
+    const fStr = document.getElementById("fecha").value;
+    if (!fStr) return alert("Seleccione fecha de instalación");
 
-    if (!fechaInstalacionGlobal) return;
-
-    // Nombres de meses cortos
-    const nombresMeses = ["Ene", "Feb", "Mar", "Abr", "May", "Jun", "Jul", "Ago", "Sep", "Oct", "Nov", "Dic"];
-    
-    // Crear fecha base a partir de la instalación
-    const fechaBase = new Date(fechaInstalacionGlobal + "T00:00:00");
-    const mesInicio = fechaBase.getMonth();
-    const añoInicio = fechaBase.getFullYear();
-
-    // Calcular cuántos meses abarca el timeline (60 días = ~3 meses, 90 días = ~4 meses)
-    // Se suma 1 porque el mes de instalación cuenta como el primero
-    const cantidadMeses = Math.ceil(timelineDias / 30) + 1;
-
-    for (let i = 0; i < cantidadMeses; i++) {
-        const fechaIterada = new Date(añoInicio, mesInicio + i, 1);
-        const nombreMes = nombresMeses[fechaIterada.getMonth()];
-        
-        const span = document.createElement("span");
-        span.className = "mes-label";
-        span.textContent = nombreMes;
-        
-        // Distribución proporcional en porcentaje (0% al 100%)
-        const posicion = (i / (cantidadMeses - 1)) * 100;
-        span.style.left = `${posicion}%`;
-        
-        contenedor.appendChild(span);
+    fechaInstalacionGlobal = new Date(fStr + 'T00:00:00');
+    const diaInst = fechaInstalacionGlobal.getDate();
+    // AJUSTE DINÁMICO DEL RANGO DE TIMELINE
+    if(diaInst >= 15){
+        timelineDias = 90;
+    }else{
+        timelineDias = 60;
     }
+    cicloActual = obtenerCicloAsignado(diaInst);
+
+    const hoy = new Date();
+    const diffMeses = (hoy.getFullYear() - fechaInstalacionGlobal.getFullYear()) * 12 + (hoy.getMonth() - fechaInstalacionGlobal.getMonth());
+    esCuentaNueva = diffMeses <= 4;
+
+    actualizarMesesUI(false);
+
+    const posInst = (diaInst / timelineDias) * 100;
+        
+    let posFact1 = (cicloActual <= diaInst && cicloActual !== 1) 
+        ? ((30 + cicloActual) / timelineDias) * 100
+        : (cicloActual === 1 ? 52 : (cicloActual / timelineDias) * 100);
+    
+    const regla = REGLAS_NEGOCIO.ciclos[cicloActual];
+    
+    let offsetVence = (regla.vence >= regla.emision) 
+        ? (regla.vence - regla.emision)
+        : (30 - regla.emision + regla.vence);
+        
+    const posV1 = posFact1 + (offsetVence / timelineDias * 100);
+    
+    let offsetCorte = 32; 
+    const posC1 = posFact1 + (offsetCorte / timelineDias * 100);
+
+    const posFact2 = posFact1 + (30 / timelineDias * 100);
+    const posV2 = posV1 + (30 / timelineDias * 100);
+    const posC2 = posC1 + (30 / timelineDias * 100);
+
+    setPos("inst", "instLabel", posInst, "🏠");
+    setPos("fact", "factLabel", posFact1, "🧾");
+    setPos("vence", "venceLabel", posV1, "📅");
+    setPos("corte", "corteLabel", posC1, "🚫");
+    setPos("fact2", "fact2Label", posFact2, "🧾");
+    setPos("vence2", "vence2Label", posV2, "📅");
+    setPos("corteT", "corteTLabel", posC2, "🚫");
+
+    const exoBar = document.getElementById("exoBar");
+    if(exoBar) {
+        exoBar.style.left = posInst + "%";
+        exoBar.style.width = (posFact1 - posInst) + "%";
+    }
+
+    posActual = posInst;
+    renderTimeline(posActual);
 }
 
 function renderTimeline(pos) {
@@ -194,32 +219,15 @@ function setPos(id, lb, pos, txt) {
     if (l) l.style.left = pos + "%";
 }
 
-function actualizarMesesUI() {
-
+function actualizarMesesUI(tresMeses) {
     if (!fechaInstalacionGlobal) return;
-
-    const meses = ["Ene","Feb","Mar","Abr","May","Jun","Jul","Ago","Sep","Oct","Nov","Dic"];
-
-    const container = document.getElementById("meses");
-    container.innerHTML = "";
-
-    const startMonth = fechaInstalacionGlobal.getMonth();
-
-    const mesesMostrar = Math.ceil(timelineDias / 30) + 1;
-
-    for(let i=0;i<mesesMostrar;i++){
-
-        const mesIndex = (startMonth + i) % 12;
-
-        const pos = (i * 30) / timelineDias * 100;
-
-        const span = document.createElement("span");
-        span.className = "mes-label";
-        span.style.left = pos + "%";
-        span.innerText = meses[mesIndex];
-
-        container.appendChild(span);
-    }
+    const meses = ["Ene", "Feb", "Mar", "Abr", "May", "Jun", "Jul", "Ago", "Sep", "Oct", "Nov", "Dic"];
+    const m1 = fechaInstalacionGlobal.getMonth();
+    const m2 = (m1 + 1) % 12;
+    const m3 = (m1 + 2) % 12;
+    document.getElementById("meses").innerHTML = `
+        <span>${meses[m1]}</span><span>${meses[m2]}</span>${tresMeses ? `<span>${meses[m3]}</span>` : ""}
+    `;
 }
 
 // FUNCIONES DE AYUDA Y LIMPIEZA (CORRECCIÓN)
@@ -319,64 +327,4 @@ function actualizarUX() {
     const baseChurn = document.getElementById("bannerChurn");
     const uxChurn = document.getElementById("bannerChurnUX");
     if(baseChurn && uxChurn) uxChurn.style.display = baseChurn.style.display;
-
 }
-
-let fechaInstalacionGlobal = null;
-let timelineDias = 60;
-
-function simular(){
-
-    const fecha = document.getElementById("fecha").value;
-
-    if(!fecha){
-        alert("Seleccione fecha");
-        return;
-    }
-
-    fechaInstalacionGlobal = new Date(fecha);
-
-    const diaInst = fechaInstalacionGlobal.getDate();
-
-    if(diaInst >= 15){
-        timelineDias = 90;
-    }else{
-        timelineDias = 60;
-    }
-
-    actualizarMesesUI();
-}
-
-
-function actualizarMesesUI(){
-
-    if (!fechaInstalacionGlobal) return;
-
-    const meses = ["Ene","Feb","Mar","Abr","May","Jun","Jul","Ago","Sep","Oct","Nov","Dic"];
-
-    const container = document.getElementById("meses");
-    container.innerHTML = "";
-
-    const startMonth = fechaInstalacionGlobal.getMonth();
-
-    // cuantos meses mostrar según duración timeline
-    const mesesMostrar = Math.ceil(timelineDias / 30) + 1;
-
-    for(let i=0;i<mesesMostrar;i++){
-
-        const mesIndex = (startMonth + i) % 12;
-
-        // distribuir equitativamente dentro del 100%
-        const pos = (i / (mesesMostrar - 1)) * 100;
-
-        const span = document.createElement("span");
-        span.className = "mes-label";
-        span.style.left = pos + "%";
-        span.innerText = meses[mesIndex];
-
-        container.appendChild(span);
-    }
-}
-
-
-
