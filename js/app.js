@@ -346,3 +346,62 @@ function actualizarUX() {
     if(baseChurn && uxChurn) uxChurn.style.display = baseChurn.style.display;
 
 }
+
+let fechaInstalacionGlobal = null;
+let timelineDias = 60;
+
+function simular(){
+
+    const fecha = document.getElementById("fecha").value;
+
+    if(!fecha){
+        alert("Seleccione fecha");
+        return;
+    }
+
+    fechaInstalacionGlobal = new Date(fecha);
+
+    const diaInst = fechaInstalacionGlobal.getDate();
+
+    if(diaInst >= 15){
+        timelineDias = 90;
+    }else{
+        timelineDias = 60;
+    }
+
+    actualizarMesesUI();
+}
+
+
+function actualizarMesesUI(){
+
+    if (!fechaInstalacionGlobal) return;
+
+    const meses = ["Ene","Feb","Mar","Abr","May","Jun","Jul","Ago","Sep","Oct","Nov","Dic"];
+
+    const container = document.getElementById("meses");
+
+    container.innerHTML = "";
+
+    const startMonth = fechaInstalacionGlobal.getMonth();
+
+    const mesesMostrar = Math.ceil(timelineDias / 30) + 1;
+
+    for(let i=0;i<mesesMostrar;i++){
+
+        const mesIndex = (startMonth + i) % 12;
+
+        const pos = (i * 30) / timelineDias * 100;
+
+        const span = document.createElement("span");
+
+        span.className = "mes-label";
+
+        span.style.left = pos + "%";
+
+        span.innerText = meses[mesIndex];
+
+        container.appendChild(span);
+    }
+}
+
