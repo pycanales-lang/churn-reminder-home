@@ -44,7 +44,7 @@ function simular() {
     const diffMeses = (hoy.getFullYear() - fechaInstalacionGlobal.getFullYear()) * 12 + (hoy.getMonth() - fechaInstalacionGlobal.getMonth());
     esCuentaNueva = diffMeses <= 4;
 
-    actualizarMesesUI(false);
+    actualizarMesesUI();
 
     const posInst = (diaInst / timelineDias) * 100;
         
@@ -219,15 +219,32 @@ function setPos(id, lb, pos, txt) {
     if (l) l.style.left = pos + "%";
 }
 
-function actualizarMesesUI(tresMeses) {
+function actualizarMesesUI() {
+
     if (!fechaInstalacionGlobal) return;
-    const meses = ["Ene", "Feb", "Mar", "Abr", "May", "Jun", "Jul", "Ago", "Sep", "Oct", "Nov", "Dic"];
-    const m1 = fechaInstalacionGlobal.getMonth();
-    const m2 = (m1 + 1) % 12;
-    const m3 = (m1 + 2) % 12;
-    document.getElementById("meses").innerHTML = `
-        <span>${meses[m1]}</span><span>${meses[m2]}</span>${tresMeses ? `<span>${meses[m3]}</span>` : ""}
-    `;
+
+    const meses = ["Ene","Feb","Mar","Abr","May","Jun","Jul","Ago","Sep","Oct","Nov","Dic"];
+
+    const container = document.getElementById("meses");
+    container.innerHTML = "";
+
+    const startMonth = fechaInstalacionGlobal.getMonth();
+
+    const mesesMostrar = Math.ceil(timelineDias / 30) + 1;
+
+    for(let i=0;i<mesesMostrar;i++){
+
+        const mesIndex = (startMonth + i) % 12;
+
+        const pos = (i * 30) / timelineDias * 100;
+
+        const span = document.createElement("span");
+        span.className = "mes-label";
+        span.style.left = pos + "%";
+        span.innerText = meses[mesIndex];
+
+        container.appendChild(span);
+    }
 }
 
 // FUNCIONES DE AYUDA Y LIMPIEZA (CORRECCIÓN)
@@ -327,4 +344,5 @@ function actualizarUX() {
     const baseChurn = document.getElementById("bannerChurn");
     const uxChurn = document.getElementById("bannerChurnUX");
     if(baseChurn && uxChurn) uxChurn.style.display = baseChurn.style.display;
+
 }
