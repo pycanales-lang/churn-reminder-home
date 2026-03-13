@@ -86,8 +86,10 @@ function simular() {
 }
 
 function renderTimeline(pos) {
+
     const track = document.getElementById("timelineTrack");
     const diaBadge = document.getElementById("diaBadge");
+
     if(!track || !diaBadge) return;
 
     const offset = (50 - pos) * TRACK_SCALE;
@@ -97,7 +99,9 @@ function renderTimeline(pos) {
     diaBadge.innerText = `Día ${diaCalendario}`;
 
     setPos("pay", "payLabel", pos, "💰");
+
     actualizarLogicaNegocio(pos);
+    actualizarMesesVisibles(pos); // 👈 ESTA LINEA NUEVA
 }
 
 function actualizarLogicaNegocio(pos) {
@@ -219,15 +223,62 @@ function setPos(id, lb, pos, txt) {
     if (l) l.style.left = pos + "%";
 }
 
-function actualizarMesesUI(tresMeses) {
+function actualizarMesesUI() {
+
     if (!fechaInstalacionGlobal) return;
-    const meses = ["Ene", "Feb", "Mar", "Abr", "May", "Jun", "Jul", "Ago", "Sep", "Oct", "Nov", "Dic"];
-    const m1 = fechaInstalacionGlobal.getMonth();
-    const m2 = (m1 + 1) % 12;
-    const m3 = (m1 + 2) % 12;
-    document.getElementById("meses").innerHTML = `
-        <span>${meses[m1]}</span><span>${meses[m2]}</span>${tresMeses ? `<span>${meses[m3]}</span>` : ""}
-    `;
+
+    const contenedor = document.getElementById("meses");
+    contenedor.innerHTML = "";
+
+    const mesesNombre = ["Ene","Feb","Mar","Abr","May","Jun","Jul","Ago","Sep","Oct","Nov","Dic"];
+
+    const fechaInicio = new Date(fechaInstalacionGlobal);
+    const fechaFin = new Date(fechaInicio);
+    fechaFin.setDate(fechaFin.getDate() + timelineDias);
+
+    const diaInst = fechaInicio.getDate();
+    const posInicio = (diaInst / timelineDias) * 100;
+
+    let cursor = new Date(fechaInicio.getFullYear(), fechaInicio.getMonth(), 1);
+
+    while(cursor <= fechaFin){
+
+        const diffDias = Math.floor((cursor - fechaInicio) / (1000*60*60*24));
+        const posicion = posInicio + (diffDias / timelineDias) * 100;
+
+        const mesDiv = document.createElement("span");
+        mesDiv.className = "mes-label";
+        mesDiv.innerText = mesesNombre[cursor.getMonth()];
+
+        mesDiv.style.position = "absolute";
+        mesDiv.style.left = posicion + "%";
+        mesDiv.style.transform = "translateX(-50%)";
+        mesDiv.style.opacity = "0";
+        mesDiv.dataset.pos = posicion;
+
+        contenedor.appendChild(mesDiv);
+
+        cursor.setMonth(cursor.getMonth() + 1);
+    }
+
+}
+
+function actualizarMesesVisibles(posActual){
+
+    const meses = document.querySelectorAll(".mes-label");
+
+    meses.forEach(m => {
+
+        const pos = parseFloat(m.dataset.pos);
+
+        if(posActual >= pos){
+            m.style.opacity = "1";
+        }else{
+            m.style.opacity = "0";
+        }
+
+    });
+
 }
 
 // FUNCIONES DE AYUDA Y LIMPIEZA (CORRECCIÓN)
