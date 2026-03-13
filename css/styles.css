@@ -106,13 +106,17 @@ button {
 }
 
 .meses { 
-    display: flex; 
-    justify-content: space-between; 
+    position: relative;
     margin-top: 20px; 
+    height: 22px;
     font-weight: 600; 
-    opacity: 0.8; 
-    font-size: 14px; 
-    min-height: 21px; 
+    opacity: 0.85; 
+    font-size: 14px;
+}
+
+.mes-label{
+    position:absolute;
+    transform:translateX(-50%);
 }
 
 /* --- TIMELINE MOTOR INVISIBLE BASE --- */
@@ -454,3 +458,4 @@ margin:auto;
 margin-top:2px;
 
 }
+
