@@ -380,28 +380,27 @@ function actualizarMesesUI(){
     const meses = ["Ene","Feb","Mar","Abr","May","Jun","Jul","Ago","Sep","Oct","Nov","Dic"];
 
     const container = document.getElementById("meses");
-
     container.innerHTML = "";
 
     const startMonth = fechaInstalacionGlobal.getMonth();
 
+    // cuantos meses mostrar según duración timeline
     const mesesMostrar = Math.ceil(timelineDias / 30) + 1;
 
     for(let i=0;i<mesesMostrar;i++){
 
         const mesIndex = (startMonth + i) % 12;
 
-        const pos = (i * 30) / timelineDias * 100;
+        // distribuir equitativamente dentro del 100%
+        const pos = (i / (mesesMostrar - 1)) * 100;
 
         const span = document.createElement("span");
-
         span.className = "mes-label";
-
         span.style.left = pos + "%";
-
         span.innerText = meses[mesIndex];
 
         container.appendChild(span);
     }
 }
+
 
