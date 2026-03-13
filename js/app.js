@@ -96,7 +96,13 @@ function renderTimeline(pos) {
     track.style.transform = `translateX(${offset}%)`;
 
     const diaCalendario = Math.round((pos / 100) * timelineDias);
-    diaBadge.innerText = `Día ${diaCalendario}`;
+
+    const fechaCursor = new Date(fechaInstalacionGlobal);
+    fechaCursor.setDate(fechaCursor.getDate() + diaCalendario);
+    
+    const meses = ["Ene","Feb","Mar","Abr","May","Jun","Jul","Ago","Sep","Oct","Nov","Dic"];
+    
+    diaBadge.innerText = `${fechaCursor.getDate()} ${meses[fechaCursor.getMonth()]}`;
 
     setPos("pay", "payLabel", pos, "💰");
 
