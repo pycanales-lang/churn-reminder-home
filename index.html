@@ -25,6 +25,20 @@
 <label>Fecha instalación</label>
 <input type="date" id="fecha">
 
+<label>Producto</label>
+<select id="producto" class="select-pro" onchange="cargarPlanes()">
+<option value="">Seleccionar</option>
+<option value="tv">TV</option>
+<option value="internet">INTERNET</option>
+<option value="combo">TV + INTERNET</option>
+<option value="tactica">OFERTA TÁCTICA</option>
+</select>
+
+<label>Plan</label>
+<select id="planSelect" class="select-pro" onchange="aplicarPlan()">
+<option value="">Seleccionar plan</option>
+</select>
+
 <label>Valor plan</label>
 <input type="number" id="plan" placeholder="0">
 
@@ -40,26 +54,34 @@
 
 <div id="meses" class="meses"></div>
 
-<!-- CICLO DE FACTURACIÓN -->
 <div id="cicloUI" style="margin-top:10px;text-align:center;font-size:13px;font-weight:600;opacity:0.9;"></div>
 
-
-<!-- ============================================== -->
-<!-- UX MOBILE: HORIZONTAL MODERNO -->
-<!-- ============================================== -->
 
 <div class="ux-board" id="uxBoard">
 
 <div class="slider-wrapper">
 
+<div class="estado-servicio">
+
+<div class="estado-texto" id="estadoServicio">
+Estado: Servicio activo
+</div>
+
+<div class="barra-servicio">
+
+<div class="barra-fill" id="barraFill"></div>
+
+</div>
+
+</div>
+
 <label>
-CONTROL DE DÍAS TRANSCURRIDOS (DÍA
-<span id="ux-day" style="color:#FFF;">0</span>)
+Día actual:
+<span id="ux-day" style="color:#FFD166;">0</span>
 </label>
 
 <div class="ux-timeline-track" id="uxTrack">
 
-<!-- CICLOS -->
 <div class="ux-ciclos">
 <div class="ux-ciclo" style="left:1%">1</div>
 <div class="ux-ciclo" style="left:11.6%">7</div>
@@ -97,8 +119,6 @@ CONTROL DE DÍAS TRANSCURRIDOS (DÍA
 <span class="ux-label">Venc 2</span>
 </div>
 
-<!-- CURSOR PAGO -->
-
 <div class="ux-pago-cursor" id="ux-pago">
 <span class="ux-pago-icon">💰</span>
 <span class="ux-pago-label">Pago</span>
@@ -117,15 +137,34 @@ step="0.1">
 </div>
 
 
-<!-- RESULTADOS -->
-
 <div class="ux-status-panel">
+
 <div id="infoUX"></div>
+
+<div id="proximoEvento" style="
+margin-top:10px;
+font-size:12px;
+opacity:0.9;
+text-align:center;
+color:#FFD166;
+font-weight:600;
+"></div>
+
 <div id="ux-message" class="ux-dynamic-desc" style="display:none"></div>
+
+<div class="factura-toggle" onclick="toggleFacturaDetalle()">
+▼ Ver detalle de facturación
 </div>
 
+<div id="facturaDetalle" class="factura-detalle">
+<div>Exoneración: <span id="det-exo">-</span></div>
+<div>Saldo F1: <span id="det-f1">-</span></div>
+<div>Cargo adm. por mora: <span id="det-adm">-</span></div>
+<div>Factura F2: <span id="det-f2">-</span></div>
+</div>
 
-<!-- FECHAS -->
+</div>
+
 
 <div class="ux-dates-board">
 <div id="detalleFechasUX"></div>
@@ -139,10 +178,6 @@ step="0.1">
 
 </div>
 
-
-<!-- ============================================================== -->
-<!-- MOTOR INVISIBLE BASE -->
-<!-- ============================================================== -->
 
 <div style="display:none; pointer-events:none;">
 
@@ -172,17 +207,17 @@ step="0.1">
 <div id="vence" class="event charge top">📅</div>
 <div id="venceLabel" class="label top">Vence</div>
 
-<div id="corte" class="event charge top" style="display:none">🚫</div>
-<div id="corteLabel" class="label top" style="display:none">Corte</div>
+<div id="corte" class="event charge top">🚫</div>
+<div id="corteLabel" class="label top">Corte</div>
 
-<div id="fact2" class="event invoice bottom" style="display:none">🧾</div>
-<div id="fact2Label" class="label bottom" style="display:none">Factura 2</div>
+<div id="fact2" class="event invoice bottom">🧾</div>
+<div id="fact2Label" class="label bottom">Factura 2</div>
 
-<div id="vence2" class="event charge top" style="display:none">📅</div>
-<div id="vence2Label" class="label top" style="display:none">Vence 2</div>
+<div id="vence2" class="event charge top">📅</div>
+<div id="vence2Label" class="label top">Vence 2</div>
 
-<div id="corteT" class="event charge-total top" style="display:none">🚫</div>
-<div id="corteTLabel" class="label top" style="display:none">Corte Total</div>
+<div id="corteT" class="event charge-total top">🚫</div>
+<div id="corteTLabel" class="label top">Corte Total</div>
 
 </div>
 </div>
@@ -198,8 +233,6 @@ step="0.1">
 </div>
 
 
-<!-- MODAL AYUDA -->
-
 <div id="modalAyuda" class="modal">
 
 <div class="modal-content">
@@ -208,12 +241,12 @@ step="0.1">
 CERRAR ✖
 </div>
 
-<img src="assets/Imagenes/Diapositiva2.PNG">
-<img src="assets/Imagenes/Diapositiva3.PNG">
-<img src="assets/Imagenes/Diapositiva4.PNG">
-<img src="assets/Imagenes/Diapositiva5.PNG">
-<img src="assets/Imagenes/Diapositiva6.PNG">
-<img src="assets/Imagenes/Diapositiva7.PNG">
+<img src="assets/Imagenes/Diapositiva2.PNG" alt="Ayuda">
+<img src="assets/Imagenes/Diapositiva3.PNG" alt="Ayuda">
+<img src="assets/Imagenes/Diapositiva4.PNG" alt="Ayuda">
+<img src="assets/Imagenes/Diapositiva5.PNG" alt="Ayuda">
+<img src="assets/Imagenes/Diapositiva6.PNG" alt="Ayuda">
+<img src="assets/Imagenes/Diapositiva7.PNG" alt="Ayuda">
 
 </div>
 
