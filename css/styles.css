@@ -82,6 +82,29 @@ input {
     color: #333; 
 }
 
+.select-pro{
+width:100%;
+height:48px;
+padding:12px;
+border-radius:12px;
+border:none;
+font-size:14px;
+background:#f2f2f2;
+margin-bottom:15px;
+outline:none;
+color:#333;
+
+appearance:none;
+-webkit-appearance:none;
+-moz-appearance:none;
+
+background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' fill='%23333' viewBox='0 0 16 16'%3E%3Cpath d='M1.5 5l6 6 6-6'/%3E%3C/svg%3E");
+background-repeat:no-repeat;
+background-position:right 15px center;
+background-size:12px;
+cursor:pointer;
+}
+
 .botones { 
     display: flex; 
     gap: 10px; 
@@ -107,16 +130,38 @@ button {
 
 .meses { 
     position: relative;
+    display: flex; 
+    justify-content: space-between; 
     margin-top: 20px; 
     font-weight: 600; 
     opacity: 0.8; 
     font-size: 14px; 
-    height: 22px;
+    min-height: 21px; 
 }
 
-.mes-label{
-    position:absolute;
-    transform:translateX(-50%);
+.timeline-regla{
+position:relative;
+width:100%;
+height:22px;
+margin-bottom:10px;
+font-size:11px;
+color:#FFD166;
+font-weight:600;
+}
+
+.regla-marca{
+position:absolute;
+transform:translateX(-50%);
+text-align:center;
+}
+
+.regla-linea{
+position:absolute;
+top:14px;
+width:1px;
+height:8px;
+background:rgba(255,255,255,0.4);
+left:50%;
 }
 
 /* --- TIMELINE MOTOR INVISIBLE BASE --- */
@@ -128,6 +173,11 @@ button {
     border-radius: 12px; 
     overflow: hidden; 
     cursor: grab; 
+}
+
+.ux-event{
+    min-width:42px;
+    pointer-events:none;
 }
 
 #playhead { 
@@ -323,9 +373,14 @@ button {
 }
 
 .ux-timeline-track {
-    position: relative; width: 100%; height: 3px;
-    background: rgba(255,255,255,0.2); margin-top: 10px;
+    position: relative;
+    width: 100%;
+    height: 3px;
+    background: rgba(255,255,255,0.2);
+    margin-top: 10px;
     border-radius: 2px;
+
+    overflow: visible; /* IMPORTANTE */
 }
 
 .ux-event {
@@ -347,7 +402,8 @@ button {
 
 .ux-pago-cursor {
     position: absolute;
-    top: 60px;
+    top: 70px;
+    left:0%;
     transform: translate3d(-50%,0,0);
     display: flex;
     flex-direction: column;
@@ -383,7 +439,7 @@ button {
     background: transparent;
 
     /* MEJORA MOVIL */
-    touch-action: none;
+    touch-action: pan-x;
     -webkit-tap-highlight-color: transparent;
     outline: none;
 }
@@ -459,3 +515,47 @@ margin-top:2px;
 
 }
 
+.factura-toggle{
+margin-top:12px;
+font-size:12px;
+cursor:pointer;
+color:#FFD166;
+font-weight:600;
+}
+
+.factura-detalle{
+margin-top:8px;
+font-size:12px;
+background:rgba(255,255,255,0.06);
+padding:10px;
+border-radius:8px;
+display:none;
+line-height:1.6;
+}
+
+.estado-servicio{
+margin-bottom:12px;
+}
+
+.estado-texto{
+font-size:13px;
+font-weight:600;
+text-align:center;
+color:#FFD166;
+margin-bottom:6px;
+}
+
+.barra-servicio{
+width:100%;
+height:8px;
+background:rgba(255,255,255,0.15);
+border-radius:10px;
+overflow:hidden;
+}
+
+.barra-fill{
+height:100%;
+width:0%;
+background:#22c55e;
+transition:width .3s ease, background .3s ease;
+}
