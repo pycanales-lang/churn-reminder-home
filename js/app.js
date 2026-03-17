@@ -2,6 +2,93 @@
  * SIMULADOR TELCO PRO - MOTOR DINÁMICO SIEBEL 2026
  * Sincronización total de Timeline, Esferas y Mensajes de Negocio
  */
+const PLANES = {
+
+tv:[
+{nombre:"TV Inicial",precio:119000},
+{nombre:"TV Familiar",precio:155000},
+{nombre:"TV FULL**",precio:50000}
+],
+
+internet:[
+{nombre:"Internet 100MB",precio:120000},
+{nombre:"Internet 200MB",precio:170000},
+{nombre:"Internet 300MB",precio:220000},
+{nombre:"Internet 400MB",precio:280000}
+],
+
+combo:[
+{nombre:"Inicial + 200",precio:180000},
+{nombre:"Fliar + 200",precio:215000},
+{nombre:"Fliar + 300",precio:255000},
+{nombre:"Fliar + 400",precio:305000},
+{nombre:"Fliar + 600",precio:365000}
+]
+
+};
+
+function cargarPlanes(){
+
+const producto = document.getElementById("producto").value;
+const select = document.getElementById("planSelect");
+
+select.innerHTML = '<option value="">Seleccionar plan</option>';
+
+if(producto === "tactica"){
+return;
+}
+
+PLANES[producto].forEach((plan,i)=>{
+
+const option = document.createElement("option");
+
+option.value = i;
+option.textContent = plan.nombre + " - " + plan.precio.toLocaleString();
+
+select.appendChild(option);
+
+});
+
+}
+
+function actualizarBarraEstado(pos){
+    const barra = document.getElementById("barraFill");
+    const texto = document.getElementById("estadoServicio");
+    if(!barra) return;
+
+    barra.style.width = pos + "%";
+
+    // Usamos las variables globales que ahora sí tienen datos
+    if(pos < posFact1Global){
+        barra.style.background = "#22c55e";
+        texto.innerText = "Estado: Servicio activo";
+    }
+    else if(pos >= posFact1Global && pos <= posV1Global){
+        barra.style.background = "#3b82f6";
+        texto.innerText = "Estado: Facturado";
+    }
+    else if(pos > posV1Global && pos < posC1Global){
+        barra.style.background = "#f59e0b";
+        texto.innerText = "Estado: En mora";
+    }
+    else {
+        barra.style.background = "#ef4444";
+        texto.innerText = "Estado: Corte parcial";
+    }
+}
+
+function aplicarPlan(){
+
+const producto = document.getElementById("producto").value;
+const index = document.getElementById("planSelect").value;
+
+if(index === "") return;
+
+const plan = PLANES[producto][index];
+
+document.getElementById("plan").value = plan.precio;
+
+}
 
 const REGLAS_NEGOCIO = {
     ciclos: {
@@ -12,6 +99,11 @@ const REGLAS_NEGOCIO = {
     },
     config: { cargo_adm: 12000 }
 };
+
+// Agrega estas 3 líneas arriba de todo, fuera de cualquier función
+let posFact1Global = 0;
+let posV1Global = 0;
+let posC1Global = 0;
 
 let posActual = 0, fechaInstalacionGlobal = null, cicloActual = 0, esCuentaNueva = false;
 let timelineDias = 60;
@@ -32,6 +124,7 @@ function simular() {
 
     fechaInstalacionGlobal = new Date(fStr + 'T00:00:00');
     const diaInst = fechaInstalacionGlobal.getDate();
+    
     // AJUSTE DINÁMICO DEL RANGO DE TIMELINE
     if(diaInst >= 15){
         timelineDias = 90;
@@ -48,7 +141,8 @@ function simular() {
 
     const posInst = (diaInst / timelineDias) * 100;
         
-    let posFact1 = (cicloActual <= diaInst && cicloActual !== 1) 
+    // CORRECCIÓN: Se asigna a la variable global sin el "let" para que sea visible en todo el código
+    posFact1Global = (cicloActual <= diaInst && cicloActual !== 1) 
         ? ((30 + cicloActual) / timelineDias) * 100
         : (cicloActual === 1 ? 52 : (cicloActual / timelineDias) * 100);
     
@@ -58,19 +152,21 @@ function simular() {
         ? (regla.vence - regla.emision)
         : (30 - regla.emision + regla.vence);
         
-    const posV1 = posFact1 + (offsetVence / timelineDias * 100);
+    // CORRECCIÓN: Se asigna a las variables globales
+    posV1Global = posFact1Global + (offsetVence / timelineDias * 100);
     
     let offsetCorte = 32; 
-    const posC1 = posFact1 + (offsetCorte / timelineDias * 100);
+    posC1Global = posFact1Global + (offsetCorte / timelineDias * 100);
 
-    const posFact2 = posFact1 + (30 / timelineDias * 100);
-    const posV2 = posV1 + (30 / timelineDias * 100);
-    const posC2 = posC1 + (30 / timelineDias * 100);
+    const posFact2 = posFact1Global + (30 / timelineDias * 100);
+    const posV2 = posV1Global + (30 / timelineDias * 100);
+    const posC2 = posC1Global + (30 / timelineDias * 100);
 
+    // Actualizamos los setPos para que usen las variables globales corregidas
     setPos("inst", "instLabel", posInst, "🏠");
-    setPos("fact", "factLabel", posFact1, "🧾");
-    setPos("vence", "venceLabel", posV1, "📅");
-    setPos("corte", "corteLabel", posC1, "🚫");
+    setPos("fact", "factLabel", posFact1Global, "🧾");
+    setPos("vence", "venceLabel", posV1Global, "📅");
+    setPos("corte", "corteLabel", posC1Global, "🚫");
     setPos("fact2", "fact2Label", posFact2, "🧾");
     setPos("vence2", "vence2Label", posV2, "📅");
     setPos("corteT", "corteTLabel", posC2, "🚫");
@@ -78,10 +174,12 @@ function simular() {
     const exoBar = document.getElementById("exoBar");
     if(exoBar) {
         exoBar.style.left = posInst + "%";
-        exoBar.style.width = (posFact1 - posInst) + "%";
+        exoBar.style.width = (posFact1Global - posInst) + "%";
     }
 
     posActual = posInst;
+
+    generarReglaTiempo();
     renderTimeline(posActual);
 }
 
@@ -96,18 +194,13 @@ function renderTimeline(pos) {
     track.style.transform = `translateX(${offset}%)`;
 
     const diaCalendario = Math.round((pos / 100) * timelineDias);
-
-    const fechaCursor = new Date(fechaInstalacionGlobal);
-    fechaCursor.setDate(fechaCursor.getDate() + diaCalendario);
-    
-    const meses = ["Ene","Feb","Mar","Abr","May","Jun","Jul","Ago","Sep","Oct","Nov","Dic"];
-    
-    diaBadge.innerText = `${fechaCursor.getDate()} ${meses[fechaCursor.getMonth()]}`;
+    diaBadge.innerText = `Día ${diaCalendario}`;
 
     setPos("pay", "payLabel", pos, "💰");
 
     actualizarLogicaNegocio(pos);
-    actualizarMesesVisibles(pos); // 👈 ESTA LINEA NUEVA
+    actualizarBarraEstado(pos);
+    actualizarMesesVisibles(pos);
 }
 
 function actualizarLogicaNegocio(pos) {
@@ -121,6 +214,8 @@ function actualizarLogicaNegocio(pos) {
     const posFact1 = parseFloat(document.getElementById("fact").style.left) || 0;
     const posV1 = parseFloat(document.getElementById("vence").style.left) || 0;
     const posC1 = parseFloat(document.getElementById("corte").style.left) || 0;
+    const posFact2 = parseFloat(document.getElementById("fact2").style.left) || 0;
+    const posV2 = parseFloat(document.getElementById("vence2").style.left) || 0;
 
     let estado = "EN PLAZO", color = "var(--success)", mensaje = "";
     let diasExo = Math.round(((posFact1 - posInst) / 100) * 90);
@@ -152,7 +247,13 @@ function actualizarLogicaNegocio(pos) {
          document.getElementById("bannerChurn").style.display = "none";
     }
 
-    const total = (estado === "EN PLAZO" || estado === "Aún no instalado") ? saldoF1 : (saldoF1 + p + REGLAS_NEGOCIO.config.cargo_adm);
+    // LÓGICA TOTAL: Saldo F1 + Factura 2 + Cargo Adm (estos dos últimos solo desde la emisión de F2)
+    let total = 0;
+    if (pos >= posFact1 && pos < posFact2) {
+        total = saldoF1;
+    } else if (pos >= posFact2) {
+        total = saldoF1 + p + REGLAS_NEGOCIO.config.cargo_adm;
+    }
 
     document.getElementById("info").innerHTML = `
         <div class="state-badge" style="background:${color}; color:${(estado === 'EN MORA') ? 'black' : 'white'}">${estado}</div>
@@ -178,23 +279,11 @@ function actualizarLogicaNegocio(pos) {
     const fCorte = new Date(fEmi);
     fCorte.setDate(fEmi.getDate() + 32);
 
-    let detalleHTML = `
-    <div style="text-align:left; font-size:13px; line-height:1.8;">
-    
-    <div style="
-    background:rgba(255,255,255,0.08);
-    padding:8px;
-    border-radius:6px;
-    margin-bottom:8px;
-    font-weight:600;
-    color:#FFD166;
-    text-align:center;
-    ">
+    let detalleHTML = `    <div style="text-align:left; font-size:13px; line-height:1.8;">
+    <div style="background:rgba(255,255,255,0.08); padding:8px; border-radius:6px; margin-bottom:8px; font-weight:600; color:#FFD166; text-align:center;">
     🔄 Ciclo de Facturación: ${cicloActual}
     </div>
-    
     <div><span style="opacity:0.8">🏠 Instalación:</span> <strong>${dInstText}</strong></div>`;
-
     if (pos >= posFact1) {
         detalleHTML += `<div><span style="opacity:0.8">🧾 Emisión F1:</span> <strong>${fEmi.toLocaleDateString()}</strong></div>`;
     }
@@ -204,9 +293,6 @@ function actualizarLogicaNegocio(pos) {
     if (pos >= posC1) {
         detalleHTML += `<div><span style="opacity:0.8">🚫 Corte Parcial:</span> <strong>${fCorte.toLocaleDateString()}</strong></div>`;
     }
-
-    const posFact2 = parseFloat(document.getElementById("fact2").style.left) || 0;
-    const posV2 = parseFloat(document.getElementById("vence2").style.left) || 0;
 
     if (pos >= posFact2) {
         const fEmi2 = new Date(fEmi);
@@ -221,6 +307,19 @@ function actualizarLogicaNegocio(pos) {
 
     detalleHTML += `</div>`;
     document.getElementById("detalleFacturacion").innerHTML = detalleHTML;
+
+    // --- SECCIÓN DE ACTUALIZACIÓN DE VALORES EN EL DETALLE ---
+    const exoMonto = Math.round((diasExo * (p/30)));
+    document.getElementById("det-exo").innerText = "Gs. " + exoMonto.toLocaleString();
+
+    // 1. Saldo F1
+    document.getElementById("det-f1").innerText = (pos >= posFact1) ? "Gs. " + saldoF1.toLocaleString() : "-";
+
+    // 2. Factura F2 (Solo aparece el monto cuando se emite la F2)
+    document.getElementById("det-f2").innerText = (pos >= posFact2) ? "Gs. " + p.toLocaleString() : "-";
+
+    // 3. Cargo Administrativo (Aparece el monto cuando vence la F1)
+    document.getElementById("det-adm").innerText = (pos >= posV1) ? "Gs. " + REGLAS_NEGOCIO.config.cargo_adm.toLocaleString() : "-";
 }
 
 function setPos(id, lb, pos, txt) {
@@ -287,7 +386,6 @@ function actualizarMesesVisibles(posActual){
 
 }
 
-// FUNCIONES DE AYUDA Y LIMPIEZA (CORRECCIÓN)
 function abrirAyuda() {
     document.getElementById('modalAyuda').style.display = 'flex';
 }
@@ -316,15 +414,26 @@ document.addEventListener("DOMContentLoaded", () => {
     const slider = document.getElementById("timeSlider");
     if(slider){
         slider.addEventListener("input",(e)=>{
-            posActual = parseFloat(e.target.value);
-            renderTimeline(posActual);
-            const uxPago = document.getElementById("ux-pago");
-            if(uxPago) uxPago.style.left = posActual + "%";
-            const dayLabel = document.getElementById("ux-day");
-            if(dayLabel) dayLabel.innerText = Math.round((posActual / 100) * timelineDias);
+
+        posActual = parseFloat(e.target.value);
+        
+        renderTimeline(posActual);
+        
+        actualizarBarraEstado(posActual);
+        
+        const uxPago = document.getElementById("ux-pago");
+        
+        if(uxPago) uxPago.style.left = posActual + "%";
+        
+        const dayLabel = document.getElementById("ux-day");
+        
+        if(dayLabel) dayLabel.innerText = Math.round((posActual / 100) * timelineDias);
+        
         });
     }
 });
+
+
 
 function actualizarUX() {
     const posInst = parseFloat(document.getElementById("inst").style.left) || 0;
@@ -367,9 +476,9 @@ function actualizarUX() {
             descBox.style.display = "block";
             const estadoActual = badge.innerText;
             if (estadoActual === "Aún no instalado") {
-                 descBox.innerHTML = `Mueve el cursor para empezar.`;
+                 descBox.innerHTML = "Mueve el cursor para empezar.";
             } else if(estadoActual === "EN PLAZO" && posActual < posFact1) {
-                descBox.innerHTML = `Servicio activo.<br>Acumulas días exonerados.`;
+                descBox.innerHTML = "Servicio activo.<br>Acumulas días exonerados.";
             } else {
                 const mensajeOriginal = baseInfo.querySelector("p");
                 if (mensajeOriginal) descBox.innerText = mensajeOriginal.innerText;
@@ -384,4 +493,72 @@ function actualizarUX() {
     const baseChurn = document.getElementById("bannerChurn");
     const uxChurn = document.getElementById("bannerChurnUX");
     if(baseChurn && uxChurn) uxChurn.style.display = baseChurn.style.display;
+}
+
+function actualizarReglaFechas(){
+
+if(!fechaInstalacionGlobal) return;
+
+const inst = new Date(fechaInstalacionGlobal);
+
+const f1 = new Date(inst);
+f1.setDate(inst.getDate()+7);
+
+const venc = new Date(inst);
+venc.setDate(inst.getDate()+21);
+
+const corte = new Date(inst);
+corte.setDate(inst.getDate()+35);
+
+const formato = d => d.toLocaleDateString("es-PY",{day:"2-digit",month:"short"});
+
+document.getElementById("timelineFechas").innerHTML= `
+<span>${formato(inst)}</span>
+<span>${formato(f1)}</span>
+<span>${formato(venc)}</span>
+<span>${formato(corte)}</span>`;
+}
+
+function generarReglaTiempo(){
+
+if(!fechaInstalacionGlobal) return;
+
+const regla = document.getElementById("timelineRegla");
+if(!regla) return;
+
+regla.innerHTML="";
+
+const meses = ["Ene","Feb","Mar","Abr","May","Jun","Jul","Ago","Sep","Oct","Nov","Dic"];
+
+const totalDias = timelineDias;
+
+for(let d=0; d<=totalDias; d+=15){
+
+const fecha = new Date(fechaInstalacionGlobal);
+fecha.setDate(fechaInstalacionGlobal.getDate()+d);
+
+const pos = (d/totalDias)*100;
+
+const marca = document.createElement("div");
+marca.className="regla-marca";
+marca.style.left = pos+"%";
+
+marca.innerHTML=`<div>${fecha.getDate()} ${meses[fecha.getMonth()]}</div>
+<div class="regla-linea"></div>`;
+regla.appendChild(marca);
+
+}
+
+}
+
+function toggleFacturaDetalle(){
+
+const box = document.getElementById("facturaDetalle");
+
+if(box.style.display==="none" || box.style.display===""){
+box.style.display="block";
+}else{
+box.style.display="none";
+}
+
 }
